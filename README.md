@@ -47,6 +47,13 @@
 
 ## 🧭 LangGraph 智能体架构
 
+<p align="center">
+  <img src="docs/architecture.svg" alt="Deep Research Agent & Intelligent Studio 系统全景架构图" width="100%">
+</p>
+
+<details>
+<summary>📐 点击展开 Mermaid 节点状态流转图</summary>
+
 ```mermaid
 flowchart TD
     S([START]) --> P[plan<br/>判断课题类型 + 拆解子问题 + 选择数据源]
@@ -59,6 +66,8 @@ flowchart TD
     W --> V[verify_report<br/>逐条事实核验：标注存疑或自动修订]
     V --> E([END])
 ```
+
+</details>
 
 | 节点 | 核心职责 | 关键机制 |
 |---|---|---|

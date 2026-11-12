@@ -1,0 +1,337 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 860" width="100%" height="100%" font-family="'Inter', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif">
+  <defs>
+    <!-- Background & Card Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B1120"/>
+      <stop offset="50%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#131B2E"/>
+    </linearGradient>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="50%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <linearGradient id="nodeBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="nodeIndigo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#312E81" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#1E1B4B" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="nodeEmerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#022C22" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="nodeAmber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78350F" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#451A03" stop-opacity="0.85"/>
+    </linearGradient>
+    <linearGradient id="nodeCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#164E63" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#083344" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Soft Glow Filter -->
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Arrow Markers -->
+    <marker id="arrowIndigo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#818CF8"/>
+    </marker>
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#38BDF8"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#FBBF24"/>
+    </marker>
+    <marker id="arrowEmerald" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#34D399"/>
+    </marker>
+  </defs>
+
+  <!-- Main Canvas Background -->
+  <rect width="1280" height="860" rx="22" fill="url(#bgGrad)"/>
+  <rect x="1" y="1" width="1278" height="858" rx="21" fill="none" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Top Accent Ribbon -->
+  <rect x="0" y="0" width="1280" height="6" rx="3" fill="url(#brandGrad)"/>
+
+  <!-- ================= HEADER ================= -->
+  <g transform="translate(40, 26)">
+    <rect x="0" y="0" width="38" height="38" rx="10" fill="url(#brandGrad)"/>
+    <text x="19" y="26" font-size="20" font-weight="800" fill="#FFFFFF" text-anchor="middle">✦</text>
+    <text x="52" y="21" font-size="22" font-weight="800" fill="#F8FAFC" letter-spacing="0.3">Deep Research Agent &amp; Intelligent Studio — 系统全景架构图</text>
+    <text x="52" y="41" font-size="12.5" fill="#94A3B8">LangGraph Map-Reduce 多源并行检索 · 论文全文抓取精读 · 逐条事实核验闭环 · 交互式伴读工作台</text>
+
+    <!-- Header Badges -->
+    <g transform="translate(880, 6)">
+      <rect x="0" y="0" width="108" height="26" rx="13" fill="#1E1B4B" stroke="#6366F1" stroke-width="1"/>
+      <text x="54" y="17" font-size="11.5" font-weight="700" fill="#A5B4FC" text-anchor="middle">LangGraph 0.6+</text>
+
+      <rect x="118" y="0" width="106" height="26" rx="13" fill="#064E3B" stroke="#10B981" stroke-width="1"/>
+      <text x="171" y="17" font-size="11.5" font-weight="700" fill="#6EE7B7" text-anchor="middle">6+1 混合数据源</text>
+
+      <rect x="234" y="0" width="86" height="26" rx="13" fill="#083344" stroke="#0EA5E9" stroke-width="1"/>
+      <text x="277" y="17" font-size="11.5" font-weight="700" fill="#7DD3FC" text-anchor="middle">SSE 流式</text>
+    </g>
+  </g>
+
+  <!-- ================= LAYER 1: CORE LANGGRAPH WORKFLOW ================= -->
+  <rect x="32" y="82" width="1216" height="318" rx="16" fill="#0F172A" fill-opacity="0.7" stroke="#334155" stroke-width="1.2"/>
+  <rect x="48" y="71" width="250" height="22" rx="6" fill="#1E293B" stroke="#475569" stroke-width="1"/>
+  <text x="173" y="86" font-size="11.5" font-weight="700" fill="#CBD5E1" text-anchor="middle">LAYER 1 · LangGraph 智能体状态机闭环</text>
+
+  <!-- Node 0: User Input + Local Docs -->
+  <g transform="translate(52, 122)" filter="url(#shadow)">
+    <rect x="0" y="0" width="142" height="128" rx="14" fill="url(#nodeBlue)" stroke="#64748B" stroke-width="1.5"/>
+    <rect x="12" y="12" width="66" height="20" rx="6" fill="#334155"/>
+    <text x="45" y="26" font-size="10.5" font-weight="700" fill="#E2E8F0" text-anchor="middle">INPUT</text>
+    <text x="14" y="54" font-size="14.5" font-weight="800" fill="#F8FAFC">🎯 研究课题输入</text>
+    <text x="14" y="75" font-size="11.5" fill="#94A3B8">• 学术前沿 / 行业格局</text>
+    <text x="14" y="94" font-size="11.5" fill="#34D399">• 📎 本地 PDF/MD 上传</text>
+    <text x="14" y="113" font-size="11" fill="#64748B">快速 / 标准 / 深度预设</text>
+  </g>
+
+  <!-- Arrow Input -> Plan -->
+  <line x1="194" y1="186" x2="224" y2="186" stroke="#818CF8" stroke-width="2.2" marker-end="url(#arrowIndigo)"/>
+
+  <!-- Node 1: Plan -->
+  <g transform="translate(228, 114)" filter="url(#shadow)">
+    <rect x="0" y="0" width="168" height="144" rx="14" fill="url(#nodeIndigo)" stroke="#6366F1" stroke-width="1.8"/>
+    <rect x="12" y="12" width="58" height="20" rx="6" fill="#4F46E5"/>
+    <text x="41" y="26" font-size="10.5" font-weight="800" fill="#FFFFFF" text-anchor="middle">01 PLAN</text>
+    <text x="14" y="53" font-size="15" font-weight="800" fill="#F8FAFC">🧭 智能拆解与规划</text>
+    <text x="14" y="75" font-size="11.5" fill="#C7D2FE">• 识别课题类型：</text>
+    <text x="22" y="92" font-size="11" fill="#A5B4FC">academic / industry / mixed</text>
+    <text x="14" y="111" font-size="11.5" fill="#C7D2FE">• 拆解 N 个正交子问题</text>
+    <text x="14" y="129" font-size="11" fill="#94A3B8">• 自动分配检索源与检索词</text>
+  </g>
+
+  <!-- Arrow Plan -> Review -->
+  <line x1="396" y1="186" x2="426" y2="186" stroke="#818CF8" stroke-width="2.2" marker-end="url(#arrowIndigo)"/>
+
+  <!-- Node 2: Review Plan (Human-in-the-loop) -->
+  <g transform="translate(430, 122)" filter="url(#shadow)">
+    <rect x="0" y="0" width="144" height="128" rx="14" fill="url(#nodeAmber)" stroke="#F59E0B" stroke-width="1.6" stroke-dasharray="5,3"/>
+    <rect x="12" y="12" width="76" height="20" rx="6" fill="#D97706"/>
+    <text x="50" y="26" font-size="10.5" font-weight="800" fill="#FFFFFF" text-anchor="middle">02 REVIEW</text>
+    <text x="14" y="54" font-size="14.5" font-weight="800" fill="#FEF3C7">👀 人工审核断点</text>
+    <text x="14" y="75" font-size="11.5" fill="#FDE68A">• interrupt() 暂停执行</text>
+    <text x="14" y="94" font-size="11.5" fill="#FDE68A">• 支持人工修改子问题</text>
+    <text x="14" y="113" font-size="11" fill="#D97706">Command(resume=...) 恢复</text>
+  </g>
+
+  <!-- Feedback Loop Arrow: Review -> Plan -->
+  <path d="M 502 122 C 502 92, 312 92, 312 112" fill="none" stroke="#FBBF24" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#arrowAmber)"/>
+  <text x="407" y="96" font-size="10.5" font-weight="600" fill="#FBBF24" text-anchor="middle">提出修改意见重规划</text>
+
+  <!-- Fan-out Arrow: Review -> Parallel Research (Send x N) -->
+  <line x1="574" y1="186" x2="622" y2="186" stroke="#38BDF8" stroke-width="2.5" marker-end="url(#arrowCyan)"/>
+  <rect x="577" y="156" width="44" height="18" rx="4" fill="#0284C7"/>
+  <text x="599" y="168" font-size="9.5" font-weight="800" fill="#FFFFFF" text-anchor="middle">Send×N</text>
+
+  <!-- Node 3: Parallel Research (Map-Reduce Sub-Agent Box) -->
+  <g transform="translate(626, 102)" filter="url(#shadow)">
+    <!-- Stacked cards effect for Map-Reduce parallelism -->
+    <rect x="8" y="-6" width="236" height="168" rx="14" fill="#083344" stroke="#0284C7" stroke-width="1" opacity="0.55"/>
+    <rect x="4" y="-3" width="236" height="168" rx="14" fill="#083344" stroke="#0284C7" stroke-width="1" opacity="0.8"/>
+    <rect x="0" y="0" width="236" height="168" rx="14" fill="url(#nodeCyan)" stroke="#38BDF8" stroke-width="2"/>
+    <rect x="12" y="12" width="112" height="20" rx="6" fill="#0284C7"/>
+    <text x="68" y="26" font-size="10.5" font-weight="800" fill="#FFFFFF" text-anchor="middle">03 RESEARCH × N</text>
+    <text x="14" y="52" font-size="15" font-weight="800" fill="#F0F9FF">⚡ 多源并行检索与精读</text>
+    <text x="14" y="74" font-size="11.5" fill="#BAE6FD">1. 6 大公开源并发检索 + 自动降级</text>
+    <text x="14" y="93" font-size="11.5" fill="#BAE6FD">2. LLM 0-10 相关性打分过滤噪音</text>
+    <text x="14" y="112" font-size="11.5" fill="#7DD3FC">3. 抓取 arXiv HTML/ar5iv/PDF 全文</text>
+    <text x="14" y="131" font-size="11.5" fill="#BAE6FD">4. 融合本地上传文档生成研究笔记</text>
+    <text x="14" y="151" font-size="10.5" fill="#38BDF8">operator.add 归并全部 Findings</text>
+  </g>
+
+  <!-- Arrow Research -> Reflect -->
+  <line x1="866" y1="186" x2="900" y2="186" stroke="#38BDF8" stroke-width="2.2" marker-end="url(#arrowCyan)"/>
+
+  <!-- Node 4: Reflect -->
+  <g transform="translate(904, 122)" filter="url(#shadow)">
+    <rect x="0" y="0" width="144" height="128" rx="14" fill="url(#nodeIndigo)" stroke="#818CF8" stroke-width="1.6"/>
+    <rect x="12" y="12" width="76" height="20" rx="6" fill="#6366F1"/>
+    <text x="50" y="26" font-size="10.5" font-weight="800" fill="#FFFFFF" text-anchor="middle">04 REFLECT</text>
+    <text x="14" y="54" font-size="14.5" font-weight="800" fill="#F8FAFC">🔍 反思与缺口补全</text>
+    <text x="14" y="75" font-size="11.5" fill="#C7D2FE">• 审阅已有研究笔记</text>
+    <text x="14" y="94" font-size="11.5" fill="#C7D2FE">• 识别未覆盖技术盲区</text>
+    <text x="14" y="113" font-size="11" fill="#A5B4FC">生成补充子问题二次深潜</text>
+  </g>
+
+  <!-- Loop Arrow: Reflect -> Research (Send x M) -->
+  <path d="M 976 250 C 976 292, 744 292, 744 272" fill="none" stroke="#38BDF8" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arrowCyan)"/>
+  <text x="860" y="286" font-size="10.5" font-weight="700" fill="#38BDF8" text-anchor="middle">发现知识缺口 → Send × M 补充检索</text>
+
+  <!-- Arrow Reflect -> Write & Verify Stack -->
+  <line x1="1048" y1="155" x2="1080" y2="142" stroke="#34D399" stroke-width="2.2" marker-end="url(#arrowEmerald)"/>
+
+  <!-- Node 5: Write Report -->
+  <g transform="translate(1084, 96)" filter="url(#shadow)">
+    <rect x="0" y="0" width="148" height="86" rx="12" fill="url(#nodeEmerald)" stroke="#10B981" stroke-width="1.8"/>
+    <rect x="10" y="10" width="68" height="18" rx="5" fill="#059669"/>
+    <text x="44" y="23" font-size="10" font-weight="800" fill="#FFFFFF" text-anchor="middle">05 WRITE</text>
+    <text x="12" y="46" font-size="13.5" font-weight="800" fill="#ECFDF5">✍️ 实时流式撰写</text>
+    <text x="12" y="64" font-size="11" fill="#A7F3D0">• 全局引文去重重排 [n]</text>
+    <text x="12" y="79" font-size="10.5" fill="#6EE7B7">• Token 级 SSE 实时预览</text>
+  </g>
+
+  <!-- Arrow Write -> Verify -->
+  <line x1="1158" y1="182" x2="1158" y2="204" stroke="#34D399" stroke-width="2" marker-end="url(#arrowEmerald)"/>
+
+  <!-- Node 6: Verify Report -->
+  <g transform="translate(1084, 208)" filter="url(#shadow)">
+    <rect x="0" y="0" width="148" height="90" rx="12" fill="url(#nodeEmerald)" stroke="#34D399" stroke-width="1.8"/>
+    <rect x="10" y="10" width="72" height="18" rx="5" fill="#10B981"/>
+    <text x="46" y="23" font-size="10" font-weight="800" fill="#022C22" text-anchor="middle">06 VERIFY</text>
+    <text x="12" y="46" font-size="13.5" font-weight="800" fill="#ECFDF5">🛡️ 逐条事实核验</text>
+    <text x="12" y="64" font-size="11" fill="#A7F3D0">• 对照原文核查带引用陈述</text>
+    <text x="12" y="79" font-size="10.5" fill="#FCD34D">• Annotate 批注 / Revise 修订</text>
+  </g>
+
+  <!-- SQLite Persistence Bar inside Layer 1 -->
+  <g transform="translate(52, 314)">
+    <rect x="0" y="0" width="1180" height="68" rx="12" fill="#1E293B" fill-opacity="0.9" stroke="#475569" stroke-width="1.2"/>
+    <rect x="14" y="18" width="136" height="32" rx="8" fill="#312E81" stroke="#6366F1" stroke-width="1"/>
+    <text x="82" y="39" font-size="12" font-weight="800" fill="#C7D2FE" text-anchor="middle">💾 SQLite 持久化层</text>
+
+    <text x="168" y="31" font-size="12.5" font-weight="700" fill="#F1F5F9">AsyncSqliteSaver (checkpoints.db)  +  RunStore (runs.db)  +  Reports JSON/MD 归档</text>
+    <text x="168" y="51" font-size="11.5" fill="#94A3B8">支持任务排队并发控制 (MAX_CONCURRENT_RUNS) · 随时取消任务 · 异常中断或服务重启后一键从断点继续 (Resume / Continue)</text>
+  </g>
+
+  <!-- ================= LAYER 2: 6+1 HYBRID DATA SOURCES & FULLTEXT ENGINE ================= -->
+  <rect x="32" y="422" width="1216" height="168" rx="16" fill="#0F172A" fill-opacity="0.7" stroke="#334155" stroke-width="1.2"/>
+  <rect x="48" y="411" width="320" height="22" rx="6" fill="#1E293B" stroke="#475569" stroke-width="1"/>
+  <text x="208" y="426" font-size="11.5" font-weight="700" fill="#CBD5E1" text-anchor="middle">LAYER 2 · 6+1 多源并发检索引擎 + 论文全文抓取与防幻觉管道</text>
+
+  <!-- Connector Arrow between Layer 2 and Layer 1 Research Node -->
+  <path d="M 744 422 L 744 274" fill="none" stroke="#38BDF8" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrowCyan)"/>
+
+  <!-- 7 Source Cards in a Row -->
+  <g transform="translate(50, 446)">
+    <!-- 1. arXiv -->
+    <g transform="translate(0, 0)">
+      <rect width="154" height="76" rx="11" fill="#1E293B" stroke="#EF4444" stroke-width="1.4"/>
+      <text x="12" y="25" font-size="13" font-weight="800" fill="#FCA5A5">📄 arXiv API</text>
+      <text x="12" y="45" font-size="11" fill="#CBD5E1">最新预印本论文检索</text>
+      <text x="12" y="63" font-size="10.5" fill="#94A3B8">arXiv HTML / ar5iv / PDF</text>
+    </g>
+    <!-- 2. S2 + OpenAlex -->
+    <g transform="translate(168, 0)">
+      <rect width="168" height="76" rx="11" fill="#1E293B" stroke="#3B82F6" stroke-width="1.4"/>
+      <text x="12" y="25" font-size="13" font-weight="800" fill="#93C5FD">🎓 S2 + OpenAlex</text>
+      <text x="12" y="45" font-size="11" fill="#CBD5E1">引用数 · 顶会/期刊元数据</text>
+      <text x="12" y="63" font-size="10.5" fill="#60A5FA">429 限流自动熔断回退</text>
+    </g>
+    <!-- 3. HuggingFace Papers -->
+    <g transform="translate(350, 0)">
+      <rect width="156" height="76" rx="11" fill="#1E293B" stroke="#F59E0B" stroke-width="1.4"/>
+      <text x="12" y="25" font-size="13" font-weight="800" fill="#FDE68A">🤗 HF Daily Papers</text>
+      <text x="12" y="45" font-size="11" fill="#CBD5E1">社区高热度 AI 论文</text>
+      <text x="12" y="63" font-size="10.5" fill="#94A3B8">支持镜像与 OpenAlex 回退</text>
+    </g>
+    <!-- 4. Web (Tavily / DDG) -->
+    <g transform="translate(520, 0)">
+      <rect width="162" height="76" rx="11" fill="#1E293B" stroke="#0EA5E9" stroke-width="1.4"/>
+      <text x="12" y="25" font-size="13" font-weight="800" fill="#7DD3FC">🌐 Tavily / DDG Web</text>
+      <text x="12" y="45" font-size="11" fill="#CBD5E1">行业报告 · 技术博客检索</text>
+      <text x="12" y="63" font-size="10.5" fill="#94A3B8">无 Key 自动回退 DuckDuckGo</text>
+    </g>
+    <!-- 5. GitHub -->
+    <g transform="translate(696, 0)">
+      <rect width="154" height="76" rx="11" fill="#1E293B" stroke="#10B981" stroke-width="1.4"/>
+      <text x="12" y="25" font-size="13" font-weight="800" fill="#6EE7B7">💻 GitHub Repos</text>
+      <text x="12" y="45" font-size="11" fill="#CBD5E1">高 Star 开源项目与框架</text>
+      <text x="12" y="63" font-size="10.5" fill="#94A3B8">工程架构与生态活跃度</text>
+    </g>
+    <!-- 6. Hacker News -->
+    <g transform="translate(864, 0)">
+      <rect width="150" height="76" rx="11" fill="#1E293B" stroke="#F97316" stroke-width="1.4"/>
+      <text x="12" y="25" font-size="13" font-weight="800" fill="#FDBA74">💬 Hacker News</text>
+      <text x="12" y="45" font-size="11" fill="#CBD5E1">Algolia API 社区讨论</text>
+      <text x="12" y="63" font-size="10.5" fill="#94A3B8">真实工程落地痛点反馈</text>
+    </g>
+    <!-- 7. Local Private Docs -->
+    <g transform="translate(1028, 0)">
+      <rect width="154" height="76" rx="11" fill="#1E1B4B" stroke="#A855F7" stroke-width="1.6"/>
+      <text x="12" y="25" font-size="13" font-weight="800" fill="#E9D5FF">📎 本地私有文档</text>
+      <text x="12" y="45" font-size="11" fill="#DDD6FE">PDF / Markdown / TXT</text>
+      <text x="12" y="63" font-size="10.5" fill="#C084FC">高优权重参与综合与核验</text>
+    </g>
+  </g>
+
+  <!-- Fulltext & Relevance Pipeline Strip -->
+  <g transform="translate(50, 534)">
+    <rect width="1182" height="40" rx="9" fill="#083344" fill-opacity="0.7" stroke="#0284C7" stroke-width="1"/>
+    <text x="591" y="25" font-size="12" font-weight="700" fill="#E0F2FE" text-anchor="middle">
+      🔬 深度清洗管线：多源候选去重  ➔  LLM 相关性打分 (0-10) + 引用/年份加权排序  ➔  高分论文抓取全文核心章节 (Method / Experiments / Limitations)  ➔  SSRF 安全防护
+    </text>
+  </g>
+
+  <!-- ================= LAYER 3: INTELLIGENT RESEARCH STUDIO (WEB UI) ================= -->
+  <rect x="32" y="612" width="1216" height="222" rx="16" fill="#0F172A" fill-opacity="0.7" stroke="#334155" stroke-width="1.2"/>
+  <rect x="48" y="601" width="350" height="22" rx="6" fill="#1E293B" stroke="#6366F1" stroke-width="1"/>
+  <text x="223" y="616" font-size="11.5" font-weight="700" fill="#A5B4FC" text-anchor="middle">LAYER 3 · Intelligent Research Studio（交互式研究工作台）</text>
+
+  <!-- Connector Arrow from Verify Report to Layer 3 -->
+  <path d="M 1158 298 L 1158 612" fill="none" stroke="#34D399" stroke-width="2.2" stroke-dasharray="5,3" marker-end="url(#arrowEmerald)"/>
+
+  <!-- 4 Studio Feature Columns -->
+  <g transform="translate(50, 636)">
+    <!-- Col 1: In-Article Intelligent UI -->
+    <g transform="translate(0, 0)">
+      <rect width="284" height="178" rx="13" fill="#1E293B" stroke="#6366F1" stroke-width="1.4"/>
+      <text x="16" y="28" font-size="14" font-weight="800" fill="#A5B4FC">📑 正文 7 大智能交互组件</text>
+      <text x="16" y="52" font-size="11.5" fill="#E2E8F0">• Bento 核心结论卡片 &amp; 章节导读 (TL;DR)</text>
+      <text x="16" y="73" font-size="11.5" fill="#E2E8F0">• 自动合成课题知识图谱 + Mermaid 缩放</text>
+      <text x="16" y="94" font-size="11.5" fill="#E2E8F0">• 对比表「表格 / 名片 / 柱状图」三态切换</text>
+      <text x="16" y="115" font-size="11.5" fill="#E2E8F0">• 量化指标语义胶囊 (+35% / 2.8x / 70B)</text>
+      <text x="16" y="136" font-size="11.5" fill="#E2E8F0">• ScrollSpy 动态目录联动 &amp; 阅读进度定位</text>
+      <text x="16" y="157" font-size="11.5" fill="#94A3B8">• 段落聚光灯筛选本段引文 &amp; 核验批注胶囊</text>
+    </g>
+
+    <!-- Col 2: Copilot & Co-Editor -->
+    <g transform="translate(299, 0)">
+      <rect width="284" height="178" rx="13" fill="#1E293B" stroke="#38BDF8" stroke-width="1.4"/>
+      <text x="16" y="28" font-size="14" font-weight="800" fill="#7DD3FC">💬 伴读 Copilot &amp; 局部 AI 精炼</text>
+      <text x="16" y="52" font-size="11.5" fill="#E2E8F0">• Ask This Report 悬浮伴读窗口（自由拖拽缩放）</text>
+      <text x="16" y="73" font-size="11.5" fill="#E2E8F0">• SSE 逐字流式回复 + 自动附带 [n] 文献胶囊</text>
+      <text x="16" y="94" font-size="11.5" fill="#E2E8F0">• 回答支持「➕ 一键插入报告末尾」</text>
+      <text x="16" y="115" font-size="11.5" fill="#E2E8F0">• 正文划词浮动 AI 菜单（解释 / 追问 / 扩写）</text>
+      <text x="16" y="136" font-size="11.5" fill="#E2E8F0">• 单章节 AI 扩写 / 增补表格 / 提炼要点</text>
+      <text x="16" y="157" font-size="11.5" fill="#FBBF24">• 章节级与全局级多步「↩ 撤回修改」栈</text>
+    </g>
+
+    <!-- Col 3: Visual Analytics & Fact-Check Inspector -->
+    <g transform="translate(598, 0)">
+      <rect width="284" height="178" rx="13" fill="#1E293B" stroke="#10B981" stroke-width="1.4"/>
+      <text x="16" y="28" font-size="14" font-weight="800" fill="#6EE7B7">📊 文献计量分析与事实核验台</text>
+      <text x="16" y="52" font-size="11.5" fill="#E2E8F0">• KPI 环形仪表盘（论文占比 / 精读率 / 可信度）</text>
+      <text x="16" y="73" font-size="11.5" fill="#E2E8F0">• 文献发表年份演进柱状图（点击按年份过滤）</text>
+      <text x="16" y="94" font-size="11.5" fill="#E2E8F0">• 学术引用影响力 × 相关性 SVG 气泡矩阵</text>
+      <text x="16" y="115" font-size="11.5" fill="#E2E8F0">• 右侧滑出式文献详情与核验批注对照抽屉</text>
+      <text x="16" y="136" font-size="11.5" fill="#E2E8F0">• 子问题研究脉络笔记与检索降级透明追踪</text>
+      <text x="16" y="157" font-size="11.5" fill="#94A3B8">• 逐条陈述核查诊断面板（支持 / 偏强 / 存疑）</text>
+    </g>
+
+    <!-- Col 4: Multi-Format Export & Diff -->
+    <g transform="translate(897, 0)">
+      <rect width="285" height="178" rx="13" fill="#1E293B" stroke="#F59E0B" stroke-width="1.4"/>
+      <text x="16" y="28" font-size="14" font-weight="800" fill="#FDE68A">📤 多模态导出、对比与安全共享</text>
+      <text x="16" y="52" font-size="11.5" fill="#E2E8F0">• ⚖️ 双报告并排对比（重合引文与结论演进）</text>
+      <text x="16" y="73" font-size="11.5" fill="#E2E8F0">• 🌐 导出单文件可离线交互 HTML 报告</text>
+      <text x="16" y="94" font-size="11.5" fill="#E2E8F0">• 📚 导出标准 BibTeX (.bib) 直通 Zotero/LaTeX</text>
+      <text x="16" y="115" font-size="11.5" fill="#E2E8F0">• 🖨 印刷级 PDF 导出 &amp; Markdown 源码编辑</text>
+      <text x="16" y="136" font-size="11.5" fill="#E2E8F0">• 🔒 ADMIN_TOKEN 多人共享设置锁保护</text>
+      <text x="16" y="157" font-size="11.5" fill="#94A3B8">• 🐳 Docker Compose 一键容器化部署</text>
+    </g>
+  </g>
+</svg>
