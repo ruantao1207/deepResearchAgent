@@ -1,0 +1,4084 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep Research Agent · Intelligent Research Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #f3f5fa;
+    --bg-mesh:
+      radial-gradient(at 12% 8%, rgba(99, 102, 241, 0.13) 0px, transparent 48%),
+      radial-gradient(at 88% 6%, rgba(14, 165, 233, 0.11) 0px, transparent 45%),
+      radial-gradient(at 50% 95%, rgba(168, 85, 247, 0.08) 0px, transparent 50%);
+    --surface: rgba(255, 255, 255, 0.92);
+    --surface-solid: #ffffff;
+    --surface-2: #f8fafc;
+    --surface-3: #f1f5f9;
+    --surface-glass: rgba(255, 255, 255, 0.78);
+    --fg: #0f172a;
+    --fg-2: #334155;
+    --muted: #64748b;
+    --muted-2: #94a3b8;
+    --pri: #4f46e5;
+    --pri-2: #7c3aed;
+    --pri-soft: rgba(79, 70, 229, 0.09);
+    --pri-border: rgba(79, 70, 229, 0.26);
+    --accent: #0ea5e9;
+    --bd: rgba(226, 232, 240, 0.9);
+    --bd-soft: rgba(241, 245, 249, 0.9);
+    --ok: #10b981;
+    --ok-soft: rgba(16, 185, 129, 0.11);
+    --warn: #f59e0b;
+    --warn-soft: rgba(245, 158, 11, 0.12);
+    --err: #ef4444;
+    --err-soft: rgba(239, 68, 68, 0.11);
+    --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.03);
+    --shadow-sm: 0 2px 8px -2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
+    --shadow-md: 0 14px 34px -12px rgba(15, 23, 42, 0.08), 0 4px 14px -4px rgba(15, 23, 42, 0.04);
+    --shadow-lg: 0 24px 54px -14px rgba(15, 23, 42, 0.16);
+    --grad-brand: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #0ea5e9 100%);
+    --radius-xl: 20px;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+  }
+  html[data-theme="dark"] {
+    --bg: #070a12;
+    --bg-mesh:
+      radial-gradient(at 12% 8%, rgba(99, 102, 241, 0.22) 0px, transparent 50%),
+      radial-gradient(at 88% 6%, rgba(14, 165, 233, 0.15) 0px, transparent 45%),
+      radial-gradient(at 50% 95%, rgba(168, 85, 247, 0.14) 0px, transparent 50%);
+    --surface: rgba(17, 24, 39, 0.86);
+    --surface-solid: #111827;
+    --surface-2: #161f33;
+    --surface-3: #1e293b;
+    --surface-glass: rgba(15, 23, 42, 0.78);
+    --fg: #f8fafc;
+    --fg-2: #cbd5e1;
+    --muted: #94a3b8;
+    --muted-2: #64748b;
+    --pri: #818cf8;
+    --pri-2: #a78bfa;
+    --pri-soft: rgba(99, 102, 241, 0.16);
+    --pri-border: rgba(129, 140, 248, 0.35);
+    --accent: #38bdf8;
+    --bd: rgba(30, 41, 59, 0.9);
+    --bd-soft: rgba(22, 31, 51, 0.9);
+    --ok: #34d399;
+    --ok-soft: rgba(16, 185, 129, 0.15);
+    --warn: #fbbf24;
+    --warn-soft: rgba(245, 158, 11, 0.15);
+    --err: #f87171;
+    --err-soft: rgba(239, 68, 68, 0.15);
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 16px 38px -10px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 26px 60px -12px rgba(0, 0, 0, 0.75);
+  }
+
+  * { box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.6); }
+
+  body {
+    margin: 0;
+    font: 15px/1.68 "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background-color: var(--bg);
+    background-image: var(--bg-mesh);
+    background-attachment: fixed;
+    color: var(--fg);
+    -webkit-font-smoothing: antialiased;
+    transition: background-color .25s ease, color .25s ease;
+  }
+  .hidden { display: none !important; }
+
+  /* Top Reading Progress Bar */
+  #read-progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+    background: var(--grad-brand); z-index: 100; transition: width .1s linear;
+  }
+
+  /* ============ App Shell & Focus Mode ============ */
+  .layout { display: flex; min-height: 100vh; width: 100%; }
+  body.focus-mode aside.side,
+  body.focus-mode #composer-card,
+  body.focus-mode header.top { display: none !important; }
+  body.focus-mode main { max-width: none; width: 100%; padding: 20px 40px 110px; }
+  body.side-collapsed aside.side { display: none !important; }
+
+  aside.side {
+    width: 296px;
+    background: var(--surface-glass);
+    backdrop-filter: blur(22px) saturate(180%);
+    border-right: 1px solid var(--bd);
+    padding: 20px 15px;
+    display: flex; flex-direction: column; gap: 14px;
+    flex-shrink: 0; max-height: 100vh; position: sticky; top: 0;
+  }
+  .brand {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 2px 6px 12px; border-bottom: 1px solid var(--bd);
+  }
+  .brand-title { display: flex; align-items: center; gap: 11px; font-weight: 800; font-size: 15.5px; letter-spacing: -0.02em; }
+  .brand-logo {
+    width: 36px; height: 36px; border-radius: 11px;
+    background: var(--grad-brand); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; box-shadow: 0 6px 16px -3px rgba(79, 70, 229, 0.45);
+  }
+  .new-btn {
+    width: 100%; padding: 10px 14px; border-radius: 12px;
+    background: var(--grad-brand); color: #fff; border: 0;
+    font-weight: 600; font-size: 13.5px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    box-shadow: 0 6px 18px -4px rgba(79, 70, 229, 0.4);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .new-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px -4px rgba(79, 70, 229, 0.52); }
+
+  .tabs {
+    display: flex; gap: 4px; background: var(--surface-3);
+    padding: 4px; border-radius: 11px;
+  }
+  .tabs button {
+    flex: 1; padding: 6px 0; border-radius: 8px; background: transparent;
+    color: var(--muted); border: 0; font-size: 12.5px; font-weight: 600; cursor: pointer;
+    transition: all .15s;
+  }
+  .tabs button.active { background: var(--surface-solid); color: var(--fg); box-shadow: var(--shadow-xs); }
+
+  .side-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 2px; }
+  .item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 11px;
+    border-radius: 11px; font-size: 13px; cursor: pointer;
+    border: 1px solid transparent; transition: all .15s ease;
+  }
+  .item:hover { background: var(--surface-2); transform: translateX(2px); }
+  .item.active {
+    background: var(--pri-soft); border-color: var(--pri-border);
+    color: var(--pri); font-weight: 600;
+  }
+  .item .t { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .item .d { color: var(--muted-2); font-size: 11px; flex-shrink: 0; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .status-dot.running, .status-dot.queued { background: var(--pri); box-shadow: 0 0 0 4px var(--pri-soft); animation: pulse 1.5s infinite; }
+  .status-dot.waiting_review { background: var(--warn); box-shadow: 0 0 0 4px var(--warn-soft); }
+  .status-dot.done { background: var(--ok); }
+  .status-dot.error { background: var(--err); }
+  .status-dot.cancelled, .status-dot.interrupted { background: var(--muted-2); }
+  @keyframes pulse { 50% { opacity: .4; } }
+
+  main { flex: 1; min-width: 0; max-width: none; width: 100%; padding: 24px 32px 110px; }
+
+  /* ============ Top Hero Header ============ */
+  header.top {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; margin-bottom: 22px;
+  }
+  .hero-title {
+    font-size: 23px; font-weight: 800; margin: 0; letter-spacing: -0.025em;
+    background: var(--grad-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .top-meta { display: flex; align-items: center; gap: 10px; }
+  .badge-env {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
+    background: var(--surface); border: 1px solid var(--bd); color: var(--fg-2);
+    box-shadow: var(--shadow-xs);
+  }
+  .icon-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 13px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    background: var(--surface); color: var(--fg); border: 1px solid var(--bd);
+    cursor: pointer; box-shadow: var(--shadow-xs); transition: all .15s;
+  }
+  .icon-btn:hover { border-color: var(--pri-border); transform: translateY(-1px); }
+
+  /* ============ Spotlight Command Composer ============ */
+  .composer-wrap {
+    padding: 1.5px; border-radius: calc(var(--radius-xl) + 1px);
+    background: linear-gradient(135deg, rgba(79,70,229,0.28), rgba(14,165,233,0.18), rgba(226,232,240,0.6));
+    box-shadow: var(--shadow-md); margin-bottom: 24px; transition: all .25s ease;
+  }
+  .composer-wrap:focus-within {
+    background: var(--grad-brand);
+    box-shadow: 0 20px 44px -12px rgba(79, 70, 229, 0.22);
+  }
+  .composer {
+    background: var(--surface-solid); border-radius: var(--radius-xl);
+    padding: 18px 22px;
+  }
+  .composer textarea {
+    width: 100%; border: 0; background: transparent; color: var(--fg);
+    font: 16px/1.6 inherit; resize: none; min-height: 56px; padding: 2px 0; outline: none;
+  }
+  .composer textarea::placeholder { color: var(--muted-2); }
+  .composer-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--bd-soft);
+  }
+  .pill-group { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .mode-pills {
+    display: inline-flex; background: var(--surface-3); padding: 3px;
+    border-radius: 10px;
+  }
+  .mode-pill {
+    padding: 5px 12px; border-radius: 7px; font-size: 12.5px; font-weight: 600;
+    border: 0; background: transparent; color: var(--muted); cursor: pointer; transition: all .15s;
+  }
+  .mode-pill.active { background: var(--surface-solid); color: var(--pri); box-shadow: var(--shadow-xs); }
+  .chip-toggle {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 500;
+    background: var(--surface-2); color: var(--muted); border: 1px solid var(--bd);
+    cursor: pointer; user-select: none; transition: all .15s;
+  }
+  .chip-toggle input { display: none; }
+  .chip-toggle.on { background: var(--pri-soft); color: var(--pri); border-color: var(--pri-border); font-weight: 600; }
+
+  .pri-btn {
+    padding: 9px 22px; border-radius: 11px; border: 0;
+    background: var(--grad-brand); color: #fff; font-weight: 600; font-size: 14px;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+    box-shadow: 0 6px 18px -3px rgba(79, 70, 229, 0.42);
+    transition: transform .15s, box-shadow .15s, opacity .15s;
+  }
+  .pri-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 24px -3px rgba(79, 70, 229, 0.55); }
+  .pri-btn:disabled { opacity: .55; cursor: not-allowed; }
+
+  .insp-row { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
+  .insp-chip {
+    padding: 4px 11px; border-radius: 999px; font-size: 12px; font-weight: 500;
+    background: var(--surface-2); border: 1px solid var(--bd); color: var(--fg-2);
+    cursor: pointer; transition: all .15s;
+  }
+  .insp-chip:hover { border-color: var(--pri); color: var(--pri); background: var(--pri-soft); transform: translateY(-1px); }
+
+  .adv-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+    gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--bd);
+  }
+  .adv-grid label { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+  input, select {
+    width: 100%; font: inherit; font-size: 13px; padding: 7px 10px;
+    border: 1px solid var(--bd); border-radius: 9px; background: var(--surface-2); color: var(--fg);
+  }
+  input:focus, select:focus { outline: 2px solid var(--pri-border); border-color: var(--pri); background: var(--surface-solid); }
+
+  /* ============ Pipeline Stepper & Sub-Question Matrix ============ */
+  .stage-card {
+    background: var(--surface); backdrop-filter: blur(16px);
+    border: 1px solid var(--bd); border-radius: var(--radius-xl);
+    padding: 20px 24px; box-shadow: var(--shadow-sm); margin-bottom: 20px;
+  }
+  .stage-head {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .stage-title { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; }
+  .type-badge {
+    font-size: 11.5px; font-weight: 600; padding: 3px 10px; border-radius: 999px;
+    background: var(--pri-soft); color: var(--pri); border: 1px solid var(--pri-border);
+  }
+
+  .stepper {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 16px;
+  }
+  .step-node {
+    padding: 9px 11px; border-radius: 11px; background: var(--surface-2);
+    border: 1px solid var(--bd); display: flex; align-items: center; gap: 8px;
+    font-size: 12.5px; color: var(--muted); transition: all .2s;
+  }
+  .step-node .idx {
+    width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface-solid); border: 1px solid var(--bd); flex-shrink: 0;
+  }
+  .step-node.active {
+    background: var(--pri-soft); border-color: var(--pri); color: var(--pri); font-weight: 600;
+    box-shadow: 0 0 0 3px var(--pri-soft);
+  }
+  .step-node.active .idx { background: var(--pri); color: #fff; border-color: var(--pri); }
+  .step-node.done { border-color: rgba(16,185,129,0.35); background: var(--ok-soft); color: var(--ok); font-weight: 600; }
+  .step-node.done .idx { background: var(--ok); color: #fff; border-color: var(--ok); }
+
+  .sq-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 12px; margin-top: 10px;
+  }
+  .sq-card {
+    background: var(--surface-2); border: 1px solid var(--bd);
+    border-radius: var(--radius-lg); padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 8px;
+    transition: transform .15s, border-color .15s, box-shadow .15s;
+  }
+  .sq-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+  .sq-card.done { background: var(--surface-solid); border-color: rgba(16,185,129,0.38); }
+  .sq-card.running { border-color: var(--pri-border); }
+  .sq-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .sq-id {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 6px; background: var(--pri-soft); color: var(--pri);
+  }
+  .sq-stat { font-size: 12px; font-weight: 600; color: var(--muted); display: inline-flex; align-items: center; gap: 5px; }
+  .sq-stat.ok { color: var(--ok); }
+  .sq-q { font-size: 13.5px; font-weight: 600; color: var(--fg); line-height: 1.48; }
+  .sq-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .src-chip {
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px;
+    background: var(--surface-solid); border: 1px solid var(--bd); color: var(--fg-2);
+  }
+  .src-chip.arxiv { color: #b91c1c; border-color: #fecaca; background: #fef2f2; }
+  .src-chip.semantic_scholar, .src-chip.openalex { color: #1d4ed8; border-color: #bfdbfe; background: #eff6ff; }
+  .src-chip.github { color: #334155; border-color: #cbd5e1; background: #f8fafc; }
+  .src-chip.hackernews { color: #c2410c; border-color: #fed7aa; background: #fff7ed; }
+  .src-chip.huggingface { color: #a16207; border-color: #fde68a; background: #fefce8; }
+  .src-chip.web, .src-chip.tavily, .src-chip.duckduckgo { color: #0369a1; border-color: #bae6fd; background: #f0f9ff; }
+  html[data-theme="dark"] .src-chip { background: var(--surface-3); border-color: var(--bd); color: var(--fg-2); }
+
+  .q-chip { font-size: 11px; color: var(--muted); background: var(--surface-solid); padding: 1px 8px; border-radius: 999px; border: 1px dashed var(--bd); }
+  .sq-warn { font-size: 11.5px; color: var(--warn); cursor: pointer; }
+
+  details.raw-log { margin-top: 12px; font-size: 12px; color: var(--muted); }
+  details.raw-log summary { cursor: pointer; user-select: none; }
+  .steps { list-style: none; margin: 8px 0 0; padding: 10px 12px; background: var(--surface-2); border-radius: 10px; max-height: 220px; overflow: auto; }
+  .steps li { padding: 5px 0; border-bottom: 1px dashed var(--bd); white-space: pre-wrap; font-size: 12px; }
+  .steps li:last-child { border: 0; }
+  .steps li.err { color: var(--err); } .steps li.warn { color: var(--warn); }
+
+  .review-card {
+    background: var(--surface-solid); border: 2px solid var(--warn);
+    border-radius: var(--radius-xl); padding: 18px 22px;
+    box-shadow: var(--shadow-md); margin-bottom: 20px;
+  }
+  .plan { white-space: pre-wrap; background: var(--surface-2); border-radius: 8px; padding: 10px 12px; font-size: 12.5px; color: var(--muted); }
+
+  /* ============ Bento KPI Dashboard Strip with SVG Donut Rings ============ */
+  .kpi-grid {
+    display: grid; grid-template-columns: 1.3fr 1fr 1fr 1.2fr; gap: 14px;
+    margin-bottom: 18px;
+  }
+  .kpi-card {
+    background: var(--surface); backdrop-filter: blur(16px);
+    border: 1px solid var(--bd); border-radius: var(--radius-lg);
+    padding: 16px 18px; box-shadow: var(--shadow-sm);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    position: relative; overflow: hidden;
+  }
+  .kpi-card::after {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--grad-brand); opacity: 0.75;
+  }
+  .kpi-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
+  .kpi-label { font-size: 12px; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .kpi-val { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; color: var(--fg); line-height: 1.15; display: flex; align-items: baseline; gap: 6px; }
+  .kpi-sub { font-size: 11.5px; color: var(--muted); font-weight: 500; }
+  .dist-bar { display: flex; height: 6px; border-radius: 999px; overflow: hidden; background: var(--surface-3); gap: 2px; margin-top: 4px; }
+  .dist-seg { height: 100%; border-radius: 999px; }
+  .ring-wrap { width: 54px; height: 54px; flex-shrink: 0; position: relative; display: flex; align-items: center; justify-content: center; }
+  .ring-wrap svg { width: 54px; height: 54px; transform: rotate(-90deg); }
+  .ring-wrap .ring-txt { position: absolute; font-size: 11.5px; font-weight: 800; color: var(--fg); }
+
+  /* ============ Sticky Glass Workspace Bar ============ */
+  .ws-header {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; flex-wrap: wrap; margin-bottom: 18px;
+    background: var(--surface-glass); backdrop-filter: blur(20px) saturate(180%);
+    padding: 8px 12px; border-radius: 14px; border: 1px solid var(--bd);
+    position: sticky; top: 10px; z-index: 25; box-shadow: var(--shadow-sm);
+  }
+  .ws-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .ws-tab {
+    padding: 7px 14px; border-radius: 9px; border: 0; background: transparent;
+    color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; transition: all .15s;
+  }
+  .ws-tab:hover { color: var(--fg); background: var(--surface-2); }
+  .ws-tab.active { background: var(--grad-brand); color: #fff; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
+  .ws-tab .cnt {
+    font-size: 11px; padding: 1px 7px; border-radius: 999px;
+    background: rgba(100,116,139,0.16); color: inherit;
+  }
+  .ws-tab.active .cnt { background: rgba(255,255,255,0.24); color: #fff; }
+  .toolbar { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* ============ Tab 1: Modular Chapter Cards & Bento Takeaways ============ */
+  .reportwrap { display: flex; gap: 22px; align-items: flex-start; }
+  #toc {
+    width: 244px; flex-shrink: 0; position: sticky; top: 72px;
+    max-height: calc(100vh - 92px); overflow-y: auto; font-size: 12.5px;
+    background: var(--surface); backdrop-filter: blur(16px);
+    border: 1px solid var(--bd); border-radius: var(--radius-lg);
+    padding: 15px; box-shadow: var(--shadow-sm);
+  }
+  .toc-head-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 7px; gap: 6px;
+  }
+  #toc b { margin: 0; color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; }
+  .toc-prog-pill {
+    font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 999px;
+    background: var(--pri-soft); color: var(--pri); border: 1px solid var(--pri-border);
+  }
+  .toc-prog-track {
+    height: 4px; background: var(--surface-3); border-radius: 999px;
+    overflow: hidden; margin-bottom: 10px;
+  }
+  .toc-prog-fill {
+    height: 100%; width: 0%; background: var(--grad-brand);
+    border-radius: 999px; transition: width .25s ease;
+  }
+  #toc a {
+    display: flex; align-items: center; gap: 7px;
+    padding: 6px 9px; color: var(--fg-2); text-decoration: none;
+    cursor: pointer; border-left: 2.5px solid transparent; border-radius: 0 8px 8px 0;
+    line-height: 1.4; margin-bottom: 2px; transition: all .16s;
+  }
+  #toc a .toc-dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    background: var(--bd); transition: all .18s;
+  }
+  #toc a.read { color: var(--muted); }
+  #toc a.read .toc-dot { background: var(--ok); }
+  #toc a:hover, #toc a.active {
+    color: var(--pri); background: var(--pri-soft); border-left-color: var(--pri); font-weight: 700;
+  }
+  #toc a.active .toc-dot {
+    background: var(--pri); transform: scale(1.35);
+    box-shadow: 0 0 0 3px var(--pri-soft);
+  }
+  #toc a.l3 { padding-left: 20px; font-size: 12px; color: var(--muted); }
+  #toc a.l3.active { color: var(--pri); }
+
+  .report {
+    flex: 1; min-width: 0; background: transparent;
+    line-height: 1.82; font-size: 15.5px; color: var(--fg);
+  }
+  /* Hero Report Title Banner */
+  .report-hero {
+    background: var(--surface-solid); border: 1px solid var(--bd);
+    border-radius: var(--radius-xl); padding: 28px 34px;
+    margin-bottom: 16px; box-shadow: var(--shadow-sm);
+    position: relative; overflow: hidden;
+  }
+  .report-hero::before {
+    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+    background: var(--grad-brand);
+  }
+  .report-hero h1 {
+    font-family: "Noto Serif SC", "Inter", serif;
+    font-size: 27px; line-height: 1.38; margin: 0 0 12px; letter-spacing: -0.015em;
+  }
+  .report-hero-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 12.5px; color: var(--muted); }
+
+  /* Modular Chapter Card for each H2 section! */
+  .chapter-card {
+    background: var(--surface-solid); border: 1px solid var(--bd);
+    border-radius: var(--radius-xl); padding: 22px 32px 26px;
+    margin-bottom: 16px; box-shadow: var(--shadow-sm);
+    transition: box-shadow .2s ease, border-color .2s ease;
+  }
+  .chapter-card:hover { box-shadow: var(--shadow-md); }
+  .chapter-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; cursor: pointer; user-select: none;
+    padding-bottom: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--bd-soft);
+  }
+  .chapter-card.collapsed .chapter-head { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+  .chapter-card.collapsed .chapter-body { display: none; }
+  .chapter-head h2 {
+    font-size: 18.5px; margin: 0; display: flex; align-items: center; gap: 10px;
+    letter-spacing: -0.01em; color: var(--fg);
+  }
+  .ch-num {
+    font-size: 12px; font-weight: 800; padding: 3px 9px; border-radius: 8px;
+    background: var(--pri-soft); color: var(--pri); border: 1px solid var(--pri-border);
+    font-family: "Inter", sans-serif;
+  }
+  .ch-toggle {
+    font-size: 12px; color: var(--muted); padding: 4px 10px; border-radius: 999px;
+    background: var(--surface-2); border: 1px solid var(--bd);
+  }
+
+  /* Bento Grid for Executive Summary / Key Takeaways */
+  .takeaways-bento {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px; margin: 6px 0 8px; padding: 0; list-style: none !important;
+  }
+  .takeaway-item {
+    background: linear-gradient(145deg, var(--surface-2), var(--pri-soft));
+    border: 1px solid var(--pri-border); border-radius: 14px;
+    padding: 14px 16px; font-size: 14px; line-height: 1.65; color: var(--fg-2);
+    display: flex; flex-direction: column; gap: 6px; position: relative;
+  }
+  .takeaway-num {
+    width: 24px; height: 24px; border-radius: 7px; background: var(--grad-brand);
+    color: #fff; font-size: 11.5px; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+
+  .report h3 {
+    font-size: 16px; margin: 22px 0 9px; color: var(--fg);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .report h3::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--pri);
+  }
+  .report p { margin: 0 0 14px; color: var(--fg-2); }
+  .report ul, .report ol { padding-left: 22px; margin: 0 0 16px; color: var(--fg-2); }
+  .report li { margin-bottom: 7px; }
+  .report strong { color: var(--fg); font-weight: 650; }
+
+  .table-scroll {
+    overflow-x: auto; margin: 16px 0 20px; border: 1px solid var(--bd);
+    border-radius: 12px; box-shadow: var(--shadow-xs);
+  }
+  .report table { border-collapse: collapse; width: 100%; font-size: 13.5px; line-height: 1.58; }
+  .report th, .report td { border-bottom: 1px solid var(--bd); padding: 11px 14px; text-align: left; vertical-align: top; }
+  .report th { background: var(--surface-2); font-weight: 700; color: var(--fg); white-space: nowrap; }
+  .report tr:nth-child(even) td { background: rgba(148, 163, 184, 0.04); }
+  .report tr:last-child td { border-bottom: 0; }
+  .report tr:hover td { background: var(--pri-soft); }
+  .report code { background: var(--surface-2); padding: 2px 6px; border-radius: 6px; font-size: 13px; border: 1px solid var(--bd); }
+
+  /* Interactive Citation Pill */
+  .cite-pill {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 0 7px; margin: 0 1.5px; border-radius: 999px;
+    font-size: 11.5px; font-weight: 700; line-height: 1.55;
+    background: var(--pri-soft); color: var(--pri); border: 1px solid var(--pri-border);
+    cursor: pointer; vertical-align: baseline; transition: all .14s;
+  }
+  .cite-pill:hover { background: var(--pri); color: #fff; transform: translateY(-1px); box-shadow: 0 3px 8px rgba(79,70,229,0.3); }
+
+  /* ============ 7 In-Article Intelligent UI Components ============ */
+  /* 1. Chapter Source Ecosystem Bar & TL;DR Callout */
+  .ch-head-right {
+    display: flex; align-items: center; gap: 7px; flex-wrap: wrap; justify-content: flex-end;
+  }
+  .ch-src-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600;
+    background: var(--surface-2); border: 1px solid var(--bd); color: var(--fg-2);
+    cursor: pointer; transition: all .15s;
+  }
+  .ch-src-pill:hover { border-color: var(--pri); color: var(--pri); background: var(--pri-soft); }
+  .ch-view-btn {
+    padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600;
+    background: var(--pri-soft); border: 1px solid var(--pri-border); color: var(--pri);
+    cursor: pointer; transition: all .15s;
+  }
+  .ch-view-btn:hover { background: var(--pri); color: #fff; }
+  .ch-tldr {
+    background: linear-gradient(90deg, var(--pri-soft) 0%, var(--surface-2) 100%);
+    border-left: 3.5px solid var(--pri); border-radius: 0 12px 12px 0;
+    padding: 11px 16px; margin: 0 0 18px;
+    font-size: 13.8px; line-height: 1.65; color: var(--fg);
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  }
+  .ch-tldr-badge {
+    flex-shrink: 0; font-size: 11px; font-weight: 800; padding: 2px 8px;
+    border-radius: 6px; background: var(--grad-brand); color: #fff;
+    letter-spacing: .02em; margin-top: 2px;
+  }
+
+  /* 2. Sub-section (H3) Multi-Column Card Grid & Bullet Feature Cards */
+  .subsec-wrap.grid-mode {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 14px; margin: 8px 0 14px; align-items: stretch;
+  }
+  .subsec-card {
+    background: var(--surface-2); border: 1px solid var(--bd);
+    border-radius: 14px; padding: 16px 20px; position: relative;
+    transition: border-color .18s, box-shadow .18s, transform .18s;
+    display: flex; flex-direction: column;
+  }
+  .subsec-wrap:not(.grid-mode) .subsec-card {
+    margin-bottom: 14px; background: rgba(248, 250, 252, 0.55);
+  }
+  html[data-theme="dark"] .subsec-wrap:not(.grid-mode) .subsec-card {
+    background: rgba(22, 31, 51, 0.55);
+  }
+  .subsec-card:hover {
+    border-color: var(--pri-border); box-shadow: var(--shadow-sm);
+  }
+  .subsec-card > h3 {
+    margin-top: 0 !important; padding-bottom: 8px; margin-bottom: 10px !important;
+    border-bottom: 1px dashed var(--bd); font-size: 15.5px;
+  }
+
+  .feature-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+    gap: 11px; margin: 10px 0 16px !important; padding: 0 !important; list-style: none !important;
+  }
+  .feature-card {
+    background: var(--surface-solid); border: 1px solid var(--bd);
+    border-radius: 12px; padding: 13px 15px; margin: 0 !important;
+    box-shadow: var(--shadow-xs); position: relative;
+    display: flex; flex-direction: column; gap: 6px;
+    transition: transform .15s, border-color .15s, box-shadow .15s;
+  }
+  .feature-card:hover {
+    transform: translateY(-2px); border-color: var(--pri-border); box-shadow: var(--shadow-sm);
+  }
+  .fc-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    font-weight: 700; font-size: 14px; color: var(--pri);
+    padding-bottom: 5px; border-bottom: 1px solid var(--bd-soft);
+  }
+  .fc-body { font-size: 13.8px; line-height: 1.65; color: var(--fg-2); }
+
+  /* 3. Inline Metric & Quantitative Semantic Badges */
+  .metric-chip {
+    display: inline-flex; align-items: center;
+    padding: 0 6px; margin: 0 1.5px; border-radius: 6px;
+    font-size: 12.5px; font-weight: 700; font-family: "Inter", ui-monospace, sans-serif;
+    line-height: 1.5; vertical-align: baseline;
+  }
+  .metric-chip.gain {
+    background: var(--ok-soft); color: var(--ok); border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+  .metric-chip.cost {
+    background: var(--warn-soft); color: var(--warn); border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+  .metric-chip.scale {
+    background: rgba(14, 165, 233, 0.11); color: var(--accent); border: 1px solid rgba(14, 165, 233, 0.28);
+  }
+
+  /* 4. Interactive Data Table Toolbar, Sort & Work Card Grid */
+  .table-box {
+    margin: 16px 0 22px; border: 1px solid var(--bd);
+    border-radius: 14px; background: var(--surface-solid);
+    box-shadow: var(--shadow-xs); overflow: hidden;
+  }
+  .tb-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; flex-wrap: wrap; padding: 10px 14px;
+    background: var(--surface-2); border-bottom: 1px solid var(--bd);
+  }
+  .tb-filter {
+    max-width: 240px; padding: 5px 10px; font-size: 12.5px;
+    border-radius: 8px; border: 1px solid var(--bd); background: var(--surface-solid);
+  }
+  .table-box .table-scroll { margin: 0; border: 0; border-radius: 0; box-shadow: none; }
+  .report th.sortable { cursor: pointer; user-select: none; transition: background .15s; }
+  .report th.sortable:hover { background: var(--pri-soft); color: var(--pri); }
+  .report th .sort-ico { font-size: 11px; color: var(--muted); margin-left: 4px; }
+  .report td:first-child { font-weight: 600; color: var(--fg); }
+  .tb-cards-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px; padding: 14px; background: var(--surface-2);
+  }
+  .work-card {
+    background: var(--surface-solid); border: 1px solid var(--bd);
+    border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 7px;
+    box-shadow: var(--shadow-xs); transition: transform .15s, border-color .15s;
+  }
+  .work-card:hover { transform: translateY(-2px); border-color: var(--pri-border); }
+  .wc-title { font-weight: 800; font-size: 14.5px; color: var(--pri); border-bottom: 1px solid var(--bd-soft); padding-bottom: 6px; }
+  .wc-row { font-size: 12.8px; line-height: 1.55; display: flex; flex-direction: column; gap: 2px; }
+  .wc-lbl { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+
+  /* 5. Embedded Mermaid & Visual Research Taxonomy Map */
+  .mermaid-card, .tax-map-card {
+    background: var(--surface-solid); border: 1px solid var(--bd);
+    border-radius: var(--radius-xl); padding: 18px 24px; margin: 14px 0 18px;
+    box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .mermaid-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; flex-wrap: wrap; padding-bottom: 10px; margin-bottom: 12px;
+    border-bottom: 1px solid var(--bd-soft);
+  }
+  .mermaid-stage {
+    overflow-x: auto; padding: 10px 6px; text-align: center;
+    background: var(--surface-2); border-radius: 12px; border: 1px solid var(--bd-soft);
+    transition: max-height .25s ease;
+  }
+  .mermaid-stage.zoomed svg { transform: scale(1.22); transform-origin: top center; margin-bottom: 40px; }
+  .mermaid-stage svg { max-width: 100%; height: auto; transition: transform .2s ease; }
+  .tax-pills-nav {
+    display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px;
+    padding-top: 10px; border-top: 1px dashed var(--bd);
+  }
+  .tax-node-pill {
+    font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 999px;
+    background: var(--surface-2); border: 1px solid var(--bd); color: var(--fg-2);
+    cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 5px;
+  }
+  .tax-node-pill:hover { border-color: var(--pri); color: var(--pri); background: var(--pri-soft); transform: translateY(-1px); }
+
+  /* 6. Paragraph/Block Spotlight & Quick Citation Action Bar */
+  .blk-bar {
+    display: inline-flex; align-items: center; gap: 5px;
+    opacity: 0; transition: opacity .15s ease;
+  }
+  .subsec-card:hover .blk-bar,
+  .feature-card:hover .blk-bar { opacity: 1; }
+  .blk-btn {
+    padding: 2px 7px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    background: var(--surface-solid); border: 1px solid var(--bd); color: var(--muted);
+    cursor: pointer; transition: all .14s;
+  }
+  .blk-btn:hover { color: var(--pri); border-color: var(--pri); background: var(--pri-soft); }
+
+  /* 7. Interactive Inline Fact-Check Verdict Pills */
+  .verdict-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 1px 8px; margin: 0 3px; border-radius: 999px;
+    font-size: 11.5px; font-weight: 700; cursor: pointer; vertical-align: baseline;
+    transition: transform .14s, box-shadow .14s;
+  }
+  .verdict-pill.warn {
+    background: var(--warn-soft); color: var(--warn); border: 1px solid rgba(245, 158, 11, 0.4);
+  }
+  .verdict-pill.bad {
+    background: var(--err-soft); color: var(--err); border: 1px solid rgba(239, 68, 68, 0.4);
+  }
+  .verdict-pill:hover { transform: translateY(-1px); box-shadow: var(--shadow-xs); }
+
+  /* ============ Phase 2: 8 Next-Gen Research Studio Upgrades ============ */
+  /* Table Auto-Chart View (Item 4) */
+  .tb-chart-box {
+    padding: 18px 22px; background: var(--surface-2);
+  }
+  .tb-chart-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; flex-wrap: wrap; margin-bottom: 14px;
+  }
+  .chart-bar-row {
+    display: grid; grid-template-columns: 190px 1fr 78px; align-items: center;
+    gap: 12px; margin-bottom: 9px; font-size: 13px;
+  }
+  .chart-bar-lbl {
+    font-weight: 600; color: var(--fg); overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+  .chart-bar-track {
+    height: 12px; background: var(--surface-3); border-radius: 999px; overflow: hidden;
+  }
+  .chart-bar-fill {
+    height: 100%; background: var(--grad-brand); border-radius: 999px;
+    transition: width .35s ease;
+  }
+  .chart-bar-val {
+    font-weight: 700; font-size: 12.5px; color: var(--pri); text-align: right;
+    font-family: "Inter", ui-monospace, sans-serif;
+  }
+
+  /* Chapter AI Co-Editor Popover Menu (Item 2) */
+  .ch-ai-wrap { position: relative; display: inline-flex; }
+  .ch-ai-menu {
+    position: absolute; top: calc(100% + 6px); right: 0; width: 230px;
+    background: var(--surface-solid); border: 1px solid var(--bd);
+    border-radius: 12px; padding: 6px; box-shadow: var(--shadow-lg);
+    z-index: 45; display: flex; flex-direction: column; gap: 3px;
+  }
+  .ch-ai-item {
+    text-align: left; padding: 7px 10px; border-radius: 8px; border: 0;
+    background: transparent; color: var(--fg); font-size: 12.5px; font-weight: 500;
+    cursor: pointer; transition: background .14s;
+  }
+  .ch-ai-item:hover { background: var(--pri-soft); color: var(--pri); font-weight: 600; }
+
+  /* Citation Timeline & Impact Scatter Analytics (Item 3) */
+  .analytics-grid {
+    display: grid; grid-template-columns: 1fr 1.25fr; gap: 14px; margin-bottom: 16px;
+  }
+  .analytics-card {
+    background: var(--surface-solid); border: 1px solid var(--bd);
+    border-radius: var(--radius-lg); padding: 16px 20px; box-shadow: var(--shadow-sm);
+  }
+  .analytics-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px; font-size: 13.5px; font-weight: 700;
+  }
+
+  /* Live Streaming Draft Card (Item 5) */
+  .live-draft-card {
+    margin-top: 14px; background: var(--surface-solid);
+    border: 1px solid var(--pri-border); border-radius: var(--radius-lg);
+    padding: 14px 18px; box-shadow: var(--shadow-sm);
+  }
+  .live-draft-body {
+    max-height: 280px; overflow-y: auto; font-size: 13.5px; line-height: 1.7;
+    color: var(--fg-2); padding-top: 8px; border-top: 1px dashed var(--bd);
+  }
+
+  /* Uploaded Local Docs Chips (Item 6) */
+  .local-docs-bar {
+    display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px;
+  }
+  .local-doc-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 11px; border-radius: 999px; font-size: 12px; font-weight: 600;
+    background: var(--ok-soft); color: var(--ok); border: 1px solid rgba(16,185,129,0.35);
+  }
+  .local-doc-chip button {
+    border: 0; background: transparent; color: inherit; cursor: pointer;
+    font-weight: 800; padding: 0 2px;
+  }
+
+  /* Ask This Report Copilot Floating Window (Item 1) — Freely Resizable & Draggable */
+  #copilot-panel {
+    position: fixed; right: 22px; bottom: 72px;
+    width: 540px; height: 640px;
+    min-width: 340px; min-height: 320px;
+    max-width: calc(100vw - 24px); max-height: calc(100vh - 24px);
+    background: var(--surface-solid); border: 1px solid var(--pri-border);
+    border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);
+    z-index: 70; display: flex; flex-direction: column; overflow: hidden;
+  }
+  #copilot-panel.maximized {
+    right: 24px !important; bottom: 24px !important; left: auto !important; top: auto !important;
+    width: min(920px, calc(100vw - 48px)) !important;
+    height: min(840px, calc(100vh - 48px)) !important;
+  }
+  .cp-rz { position: absolute; z-index: 10; user-select: none; }
+  .cp-rz-w { top: 14px; bottom: 14px; left: 0; width: 7px; cursor: ew-resize; }
+  .cp-rz-n { left: 14px; right: 14px; top: 0; height: 7px; cursor: ns-resize; }
+  .cp-rz-e { top: 14px; bottom: 14px; right: 0; width: 7px; cursor: ew-resize; }
+  .cp-rz-s { left: 14px; right: 14px; bottom: 0; height: 7px; cursor: ns-resize; }
+  .cp-rz-nw {
+    top: 0; left: 0; width: 16px; height: 16px; cursor: nwse-resize;
+    background: linear-gradient(135deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.55) 35%, transparent 36%);
+    border-top-left-radius: var(--radius-xl);
+  }
+  .cp-rz-ne { top: 0; right: 0; width: 14px; height: 14px; cursor: nesw-resize; }
+  .cp-rz-sw { bottom: 0; left: 0; width: 14px; height: 14px; cursor: nesw-resize; }
+  .cp-rz-se { bottom: 0; right: 0; width: 16px; height: 16px; cursor: nwse-resize; }
+  .cp-head {
+    padding: 13px 16px; background: var(--grad-brand); color: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+    font-weight: 700; font-size: 14px; cursor: move; user-select: none;
+  }
+  .cp-msgs {
+    flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px;
+    background: var(--surface-2);
+  }
+  .cp-msg {
+    padding: 10px 13px; border-radius: 13px; font-size: 13.2px; line-height: 1.62;
+    max-width: 92%; word-break: break-word;
+  }
+  .cp-msg.user {
+    align-self: flex-end; background: var(--pri); color: #fff; border-bottom-right-radius: 4px;
+  }
+  .cp-msg.bot {
+    align-self: flex-start; background: var(--surface-solid); color: var(--fg);
+    border: 1px solid var(--bd); border-bottom-left-radius: 4px;
+  }
+  .cp-msg-actions {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    margin-top: 8px; padding-top: 7px; border-top: 1px dashed var(--bd-soft);
+  }
+  .cp-act-btn {
+    padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600;
+    background: var(--surface-2); border: 1px solid var(--bd); color: var(--fg-2);
+    cursor: pointer; transition: all .14s; display: inline-flex; align-items: center; gap: 4px;
+  }
+  .cp-act-btn:hover { border-color: var(--pri); color: var(--pri); background: var(--pri-soft); }
+  #cp-quote-bar {
+    padding: 7px 12px; background: var(--pri-soft); border-top: 1px solid var(--pri-border);
+    font-size: 12px; color: var(--fg-2); display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  #cp-quote-txt {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; font-weight: 500;
+  }
+  .cp-presets {
+    display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px;
+    background: var(--surface-solid); border-top: 1px solid var(--bd-soft);
+  }
+  .cp-preset {
+    white-space: nowrap; font-size: 11.5px; padding: 4px 9px; border-radius: 999px;
+    background: var(--surface-2); border: 1px solid var(--bd); color: var(--fg-2);
+    cursor: pointer; flex-shrink: 0;
+  }
+  .cp-preset:hover { border-color: var(--pri); color: var(--pri); background: var(--pri-soft); }
+  .cp-foot {
+    padding: 10px 12px; background: var(--surface-solid); border-top: 1px solid var(--bd);
+    display: flex; gap: 8px;
+  }
+
+  /* Text Selection Floating AI Toolbar (Phase 3 Item 4) */
+  #sel-toolbar {
+    position: fixed; z-index: 85;
+    display: flex; align-items: center; gap: 4px;
+    background: var(--surface-solid); border: 1px solid var(--pri-border);
+    padding: 5px 6px; border-radius: 999px;
+    box-shadow: var(--shadow-lg), 0 0 0 3px var(--pri-soft);
+    animation: selPop .14s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes selPop {
+    from { opacity: 0; transform: translateY(4px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .sel-btn {
+    padding: 5px 10px; border-radius: 999px; border: 0;
+    background: transparent; color: var(--fg); font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all .14s; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .sel-btn:hover { background: var(--pri-soft); color: var(--pri); }
+  .sel-sep { width: 1px; height: 15px; background: var(--bd); margin: 0 2px; }
+
+  /* Dual-Report Comparison Modal (Item 8) */
+  .diff-modal {
+    width: 100%; max-width: 1180px; max-height: 88vh; overflow-y: auto;
+    background: var(--surface-solid); border: 1px solid var(--bd);
+    border-radius: var(--radius-xl); padding: 24px 28px; box-shadow: var(--shadow-lg);
+  }
+  .diff-cols {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;
+  }
+  .diff-col {
+    background: var(--surface-2); border: 1px solid var(--bd);
+    border-radius: 14px; padding: 16px 18px;
+  }
+
+  ol.refs {
+    padding-left: 0; list-style: none; font-size: 13px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 10px;
+  }
+  ol.refs li {
+    padding: 11px 14px; border-radius: 12px; background: var(--surface-2);
+    border: 1px solid var(--bd); word-break: break-word; line-height: 1.55;
+    transition: all .25s;
+  }
+  ol.refs li:hover { border-color: var(--pri-border); transform: translateY(-1px); }
+  ol.refs li.flash { background: var(--warn-soft); border-color: var(--warn); box-shadow: 0 0 0 3px var(--warn-soft); }
+
+  /* ============ Slide-Over Source Inspector Drawer ============ */
+  #src-drawer {
+    position: fixed; top: 16px; right: 16px; bottom: 16px; width: 390px; max-width: calc(100vw - 32px);
+    background: var(--surface-solid); border: 1px solid var(--bd);
+    border-radius: var(--radius-xl); padding: 20px 22px; z-index: 75;
+    box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: 12px;
+    overflow-y: auto;
+  }
+
+  /* ============ Tab 2, 3, 4 Cards ============ */
+  .finding-card {
+    background: var(--surface-solid); border: 1px solid var(--bd);
+    border-radius: var(--radius-xl); padding: 20px 24px; margin-bottom: 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .finding-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 12px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--bd-soft);
+  }
+  .finding-body { font-size: 14.5px; line-height: 1.78; color: var(--fg-2); }
+
+  .filter-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .src-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; }
+  .src-card {
+    background: var(--surface-solid); border: 1px solid var(--bd);
+    border-radius: var(--radius-lg); padding: 16px 18px;
+    display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+    box-shadow: var(--shadow-sm); transition: transform .15s, border-color .15s, box-shadow .15s;
+  }
+  .src-card:hover { transform: translateY(-3px); border-color: var(--pri-border); box-shadow: var(--shadow-md); }
+  .src-title { font-weight: 700; font-size: 14.5px; color: var(--fg); text-decoration: none; line-height: 1.45; }
+  .src-title:hover { color: var(--pri); }
+  .src-meta { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .src-snip { font-size: 12.5px; color: var(--fg-2); line-height: 1.58; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+  .claim-card {
+    background: var(--surface-solid); border: 1px solid var(--bd);
+    border-left: 4px solid var(--warn); border-radius: var(--radius-lg);
+    padding: 14px 18px; margin-bottom: 10px; box-shadow: var(--shadow-sm);
+  }
+  .claim-card.unsupported { border-left-color: var(--err); }
+  .claim-card.supported { border-left-color: var(--ok); }
+
+  /* ============ Floating Quick Dock & Popover & Modal ============ */
+  .quick-dock {
+    position: fixed; right: 22px; bottom: 22px; z-index: 40;
+    display: flex; gap: 8px; background: var(--surface-glass);
+    backdrop-filter: blur(16px); border: 1px solid var(--bd);
+    padding: 6px; border-radius: 999px; box-shadow: var(--shadow-md);
+  }
+  #tip {
+    position: fixed; z-index: 80; max-width: 440px;
+    background: var(--surface-solid); color: var(--fg);
+    border: 1px solid var(--bd); padding: 13px 15px; border-radius: 14px;
+    font-size: 12.5px; line-height: 1.55; pointer-events: none;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 60;
+    background: rgba(15, 23, 42, 0.48); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal {
+    width: 100%; max-width: 650px; background: var(--surface-solid);
+    border: 1px solid var(--bd); border-radius: var(--radius-xl);
+    padding: 24px 26px; box-shadow: var(--shadow-lg);
+  }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+  .row > label { flex: 1; min-width: 180px; font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+  .actions { margin-top: 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  button.ghost { background: var(--surface-solid); color: var(--fg); border: 1px solid var(--bd); padding: 7px 13px; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all .14s; }
+  button.ghost:hover { background: var(--surface-2); border-color: var(--pri-border); }
+  button.danger { background: var(--err-soft); color: var(--err); border: 1px solid rgba(239,68,68,0.3); padding: 6px 12px; border-radius: 9px; cursor: pointer; font-size: 12.5px; font-weight: 600; }
+  button.small { padding: 5px 11px; font-size: 12.5px; border-radius: 8px; }
+  .pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--surface-2); color: var(--muted); }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.bad { background: var(--err-soft); color: var(--err); }
+  .spin { display: inline-block; width: 13px; height: 13px; border: 2px solid var(--pri-border); border-top-color: var(--pri); border-radius: 50%; animation: r .8s linear infinite; vertical-align: -2px; margin-right: 6px; }
+  @keyframes r { to { transform: rotate(360deg); } }
+  #editor { width: 100%; min-height: 540px; font-family: ui-monospace, Consolas, monospace; font-size: 13.5px; padding: 16px; border-radius: 14px; border: 1px solid var(--bd); background: var(--surface-solid); color: var(--fg); }
+
+  @media (max-width: 1060px) { #toc { display: none; } .kpi-grid { grid-template-columns: repeat(2, 1fr); } .stepper { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 760px) { aside.side { display: none; } main { padding: 16px; } .chapter-card { padding: 18px 20px; } }
+  @media print {
+    aside.side, #toc, .ws-header, .composer-wrap, .stage-card, .kpi-grid, header.top, .quick-dock, #src-drawer { display: none !important; }
+    body { background: #fff; } main { max-width: none; padding: 0; }
+    .chapter-card, .report-hero { border: 0; padding: 10px 0; box-shadow: none; } .layout { display: block; }
+  }
+</style>
+</head>
+<body>
+<div id="read-progress"></div>
+
+<div class="layout">
+  <!-- ============ Sidebar ============ -->
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-title">
+        <div class="brand-logo">✦</div>
+        <div>
+          <div>Deep Research</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:500">Intelligent Research Studio</div>
+        </div>
+      </div>
+      <button class="icon-btn" id="theme-btn" title="切换深浅色主题" style="padding:5px 9px">🌙</button>
+    </div>
+
+    <button class="new-btn" id="new-research">✦ 新建深度调研</button>
+
+    <div class="tabs">
+      <button id="tab-runs" class="active">研究任务</button>
+      <button id="tab-reports">报告归档</button>
+    </div>
+    <div id="list-runs" class="side-list"></div>
+    <div id="list-reports" class="side-list hidden"></div>
+  </aside>
+
+  <!-- ============ Main Stage ============ -->
+  <main>
+    <header class="top">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="icon-btn" id="toggle-side" title="收起/展开左侧导航栏" style="padding:7px 10px">☰ 侧栏</button>
+        <div>
+          <h1 class="hero-title">智能学术与行业深潜工作台</h1>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">子问题自动规划 · 6 大数据源并行检索 · 论文全文精读 · 逐条事实核验</div>
+        </div>
+      </div>
+      <div class="top-meta">
+        <span class="badge-env" id="active-model-pill">🧠 模型加载中…</span>
+        <button class="icon-btn" id="open-settings">⚙️ API 设置 <span id="cfg-badge"></span></button>
+      </div>
+    </header>
+
+    <!-- ============ Settings Modal ============ -->
+    <div id="settings" class="modal-backdrop hidden">
+      <div class="modal">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <b style="font-size:16px">⚙️ 模型与检索 API 设置</b>
+          <button class="ghost small" id="close-settings">✕</button>
+        </div>
+        <div style="font-size:12.5px;color:var(--muted);margin-top:4px">保存在服务端本地文件，立即生效；密钥脱敏不回显，留空表示保持原值。</div>
+        <div class="row">
+          <label>API Base URL（OpenAI 兼容）<input id="s_openai_base_url" placeholder="https://api.openai.com/v1（留空默认）"></label>
+          <label>API Key <span id="h_openai_api_key"></span><input id="s_openai_api_key" type="password" autocomplete="off" placeholder="sk-..."></label>
+        </div>
+        <div class="row">
+          <label>默认模型（规划/检索/反思/核验）<input id="s_llm_model" placeholder="gpt-4o-mini / deepseek-chat"></label>
+          <label>写作模型（可选）<input id="s_writer_model" placeholder="留空则同默认模型"></label>
+        </div>
+        <div class="row">
+          <label>Tavily Key（网页搜索，可选）<span id="h_tavily_api_key"></span><input id="s_tavily_api_key" type="password" autocomplete="off" placeholder="tvly-..."></label>
+          <label>Semantic Scholar Key（可选）<span id="h_s2_api_key"></span><input id="s_s2_api_key" type="password" autocomplete="off"></label>
+          <label>GitHub Token（可选）<span id="h_github_token"></span><input id="s_github_token" type="password" autocomplete="off" placeholder="ghp_..."></label>
+        </div>
+        <div class="row hidden" id="admin-token-row">
+          <label style="color:var(--warn);font-weight:600">🔒 管理员口令（服务端已启用 ADMIN_TOKEN 保护，修改设置需验证）<input id="s_admin_token" type="password" autocomplete="off" placeholder="请输入服务端配置的 ADMIN_TOKEN"></label>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:var(--muted)">
+          快捷填入 Base URL：
+          <a href="#" class="preset-url" data-url="https://api.deepseek.com/v1" style="color:var(--pri)">DeepSeek</a> ·
+          <a href="#" class="preset-url" data-url="https://dashscope.aliyuncs.com/compatible-mode/v1" style="color:var(--pri)">通义千问</a> ·
+          <a href="#" class="preset-url" data-url="http://localhost:11434/v1" style="color:var(--pri)">本地 Ollama</a>
+        </div>
+        <div class="actions">
+          <button class="pri-btn" id="save-settings" style="padding:8px 18px">保存配置</button>
+          <button class="ghost" id="test-settings">保存并测试连接</button>
+          <span id="settings-msg" style="font-size:12.5px"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Spotlight Command Composer ============ -->
+    <div class="composer-wrap" id="composer-card">
+      <section class="composer">
+        <textarea id="topic" placeholder="输入你想深入调研的论文方向、技术演进或行业格局（支持中英文）…"></textarea>
+
+        <div class="insp-row" id="insp-row">
+          <span style="font-size:12px;color:var(--muted);font-weight:600">✨ 热门课题一键填入：</span>
+          <span class="insp-chip" data-q="Speculative decoding 加速大模型推理的最新研究与框架落地">⚡ Speculative Decoding 推理加速</span>
+          <span class="insp-chip" data-q="2026 年 AI Agent Memory 记忆机制的最新学术进展与工程实践">🧠 Agent Memory 最新进展</span>
+          <span class="insp-chip" data-q="生成式推荐系统（Generative Recommendation）的主要范式、前沿难点与最新进展">🎯 生成式推荐系统前沿</span>
+          <span class="insp-chip" data-q="2026 年 AI Coding Agent 业界竞争格局、核心架构与评测基准">🤖 AI Coding Agent 格局</span>
+        </div>
+
+        <div id="local-docs-row" class="local-docs-bar hidden"></div>
+        <input type="file" id="doc-upload-input" class="hidden" multiple accept=".pdf,.md,.txt,.markdown">
+
+        <div class="composer-bar" style="margin-top:12px">
+          <div class="pill-group">
+            <div class="mode-pills" role="group" aria-label="研究深度预设">
+              <button type="button" class="mode-pill" data-mode="fast">⚡ 快速速览</button>
+              <button type="button" class="mode-pill active" data-mode="standard">🔬 标准深潜</button>
+              <button type="button" class="mode-pill" data-mode="deep">🏛️ 深度综述</button>
+            </div>
+
+            <label class="chip-toggle" id="lbl-review"><input type="checkbox" id="review"> 👀 计划确认</label>
+            <label class="chip-toggle on" id="lbl-fulltext"><input type="checkbox" id="fulltext" checked> 📖 精读全文</label>
+            <label class="chip-toggle on" id="lbl-filter"><input type="checkbox" id="relevance_filter" checked> 🎯 相关性过滤</label>
+            <button type="button" class="ghost small" id="btn-upload-doc" title="上传本地 PDF/Markdown/TXT 论文或参考文档参与混合调研">📎 本地文档</button>
+            <button type="button" class="ghost small" id="toggle-adv">⚙️ 参数微调</button>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px">
+            <span id="status" style="font-size:13px;color:var(--muted)"></span>
+            <button class="pri-btn" id="start">✦ 开始深度调研</button>
+          </div>
+        </div>
+
+        <div id="adv-box" class="adv-grid hidden">
+          <label>子问题上限<input id="max_sub_questions" type="number" min="1" max="12" value="5"></label>
+          <label>反思补充轮数<input id="iterations" type="number" min="0" max="5" value="1"></label>
+          <label>事实核验模式
+            <select id="verify">
+              <option value="annotate">标注存疑陈述（默认）</option>
+              <option value="revise">核验后自动修订正文</option>
+              <option value="off">关闭核验</option>
+            </select>
+          </label>
+          <label>报告语言<input id="language" placeholder="中文"></label>
+          <label>临时覆盖检索模型<input id="model" placeholder="默认跟随设置"></label>
+          <label>临时覆盖写作模型<input id="writer_model" placeholder="默认跟随设置"></label>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============ Live Pipeline & Sub-Question Cards ============ -->
+    <section id="progress" class="stage-card hidden">
+      <div class="stage-head">
+        <div class="stage-title">
+          <span id="run-title">正在调研</span>
+          <span id="run-type-badge" class="type-badge hidden"></span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="btn-cancel" class="danger hidden">⏹ 停止任务</button>
+          <button id="btn-continue" class="pri-btn hidden" style="padding:6px 14px;font-size:12.5px">▶ 从断点继续</button>
+          <button id="btn-delete" class="ghost small hidden">🗑 删除记录</button>
+        </div>
+      </div>
+
+      <div class="stepper" id="stepper">
+        <div class="step-node" data-step="plan"><span class="idx">1</span><span>课题拆解</span></div>
+        <div class="step-node" data-step="review_plan"><span class="idx">2</span><span>计划确认</span></div>
+        <div class="step-node" data-step="research"><span class="idx">3</span><span>多源深潜</span></div>
+        <div class="step-node" data-step="reflect"><span class="idx">4</span><span>反思补全</span></div>
+        <div class="step-node" data-step="write_report"><span class="idx">5</span><span>综合撰写</span></div>
+        <div class="step-node" data-step="verify_report"><span class="idx">6</span><span>事实核验</span></div>
+      </div>
+
+      <div id="sq-grid" class="sq-grid"></div>
+
+      <!-- Live Token-by-Token Streaming Draft Box (Item 5) -->
+      <div id="live-draft-box" class="live-draft-card hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-weight:700;font-size:13.5px;color:var(--pri)"><span class="spin"></span>✍️ 正在流式生成深度报告正文…</span>
+          <span id="live-draft-cnt" class="pill">0 字</span>
+        </div>
+        <div id="live-draft-body" class="live-draft-body"></div>
+      </div>
+
+      <details class="raw-log">
+        <summary>查看底层执行日志 (<span id="step-count">0</span>)</summary>
+        <ul class="steps" id="steps"></ul>
+      </details>
+    </section>
+
+    <!-- ============ Interactive Plan Review Card ============ -->
+    <section id="review-box" class="review-card hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <b style="font-size:15px">👀 请确认或调整研究计划</b>
+        <span class="pill warn">等待人工确认</span>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px">上方卡片已列出拆解出的子问题与检索源。可直接通过，或输入补充要求让 Agent 重新规划：</div>
+      <div class="plan hidden" id="plan-text"></div>
+      <input id="feedback" placeholder="留空直接确认通过；或输入修改意见，如：增加一个关于工业界开源框架对比的子问题">
+      <div class="actions" style="margin-top:12px">
+        <button class="pri-btn" id="approve" style="padding:8px 18px">✓ 确认计划并开始检索</button>
+      </div>
+    </section>
+
+    <!-- ============ Completed Research Workspace ============ -->
+    <section id="result" class="hidden">
+      <!-- Bento KPI Dashboard Strip with SVG Donut Charts -->
+      <div class="kpi-grid" id="kpi-strip">
+        <div class="kpi-card">
+          <div class="kpi-info">
+            <div class="kpi-label"><span>📚 引用文献与来源生态</span></div>
+            <div class="kpi-val"><span id="kpi-src-total">0</span><span class="kpi-sub" id="kpi-src-breakdown">篇精选来源</span></div>
+            <div class="dist-bar" id="kpi-dist-bar"></div>
+          </div>
+          <div class="ring-wrap" id="ring-src"></div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-info">
+            <div class="kpi-label"><span>📖 论文/网页全文精读</span></div>
+            <div class="kpi-val"><span id="kpi-ft-total">0</span><span class="kpi-sub" id="kpi-ft-sub">篇深度解析</span></div>
+            <div class="kpi-sub">提取方法、实验与核心指标</div>
+          </div>
+          <div class="ring-wrap" id="ring-ft"></div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-info">
+            <div class="kpi-label"><span>🧭 探索子课题维度</span></div>
+            <div class="kpi-val"><span id="kpi-sq-total">0</span><span class="kpi-sub" id="kpi-sq-sub">个研究维度</span></div>
+            <div class="kpi-sub">相关性打分 + 交叉去重</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-info">
+            <div class="kpi-label"><span>🛡️ 事实核验可信度</span><span id="kpi-ver-pill"></span></div>
+            <div class="kpi-val"><span id="kpi-ver-rate">—</span><span class="kpi-sub" id="kpi-ver-sub"></span></div>
+            <div class="dist-bar" id="kpi-ver-bar"></div>
+          </div>
+          <div class="ring-wrap" id="ring-ver"></div>
+        </div>
+      </div>
+
+      <!-- Sticky Workspace Switcher & Toolbar -->
+      <div class="ws-header">
+        <div class="ws-tabs">
+          <button class="ws-tab active" data-pane="pane-report">📑 深度报告</button>
+          <button class="ws-tab" data-pane="pane-findings">🧭 研究脉络 <span class="cnt" id="cnt-findings">0</span></button>
+          <button class="ws-tab" data-pane="pane-sources">📚 文献与来源库 <span class="cnt" id="cnt-sources">0</span></button>
+          <button class="ws-tab" data-pane="pane-verify">🛡️ 事实核验 <span class="cnt" id="cnt-verify">0</span></button>
+        </div>
+        <div class="toolbar">
+          <button class="ghost small hidden" id="undo-report-btn" title="撤回上一次 AI 精炼或正文编辑" style="color:var(--warn);border-color:var(--warn)">↩ 撤回修改</button>
+          <button class="ghost small" id="fold-all" title="展开或折叠全部章节卡片">⊟ 折叠章节</button>
+          <button class="ghost small" id="toggle-toc">☰ 目录</button>
+          <button class="ghost small" id="open-diff" title="与归档中的其他报告进行并排对比">⚖️ 报告对比</button>
+          <button class="ghost small" id="edit">✎ 编辑</button>
+          <button class="ghost small" id="copy">⎘ 复制</button>
+          <button class="ghost small" id="download">↓ MD</button>
+          <button class="ghost small" id="export-html" title="导出单文件可交互 HTML 报告">🌐 交互 HTML</button>
+          <button class="ghost small" id="export-bib" title="导出 BibTeX 文献引用包（可导入 Zotero / LaTeX）">📚 BibTeX</button>
+          <button class="ghost small" id="print">🖨 PDF</button>
+        </div>
+      </div>
+
+      <!-- Pane 1: Modular Editorial Report -->
+      <div id="pane-report" class="ws-pane">
+        <details class="verify hidden" id="verify-box"><summary id="verify-sum"></summary><ul id="verify-list"></ul></details>
+        <div class="reportwrap">
+          <nav id="toc"></nav>
+          <div style="flex:1;min-width:0">
+            <article class="report" id="report"></article>
+            <div id="edit-box" class="hidden">
+              <textarea id="editor"></textarea>
+              <div class="actions">
+                <button class="pri-btn" id="edit-save">保存修改</button>
+                <button class="ghost" id="edit-cancel">取消</button>
+                <span id="edit-msg" style="font-size:13px;color:var(--muted)"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pane 2: Sub-question Research Findings -->
+      <div id="pane-findings" class="ws-pane hidden">
+        <div id="findings-list"></div>
+      </div>
+
+      <!-- Pane 3: Interactive Sources Library -->
+      <div id="pane-sources" class="ws-pane hidden">
+        <!-- Item 3: Citation Timeline & Impact Scatter Analytics -->
+        <div id="src-analytics-box" class="analytics-grid">
+          <div class="analytics-card">
+            <div class="analytics-head">
+              <span>📅 文献发表时间演进分布</span>
+              <span style="font-size:11.5px;color:var(--muted);font-weight:500" id="year-filter-hint">点击柱条可按年份过滤</span>
+            </div>
+            <div id="chart-timeline"></div>
+          </div>
+          <div class="analytics-card">
+            <div class="analytics-head">
+              <span>🔥 学术影响力与相关性气泡矩阵</span>
+              <span style="font-size:11.5px;color:var(--muted);font-weight:500">横轴: 年份 · 纵轴: 引用影响力 · 点击气泡查看详情</span>
+            </div>
+            <div id="chart-scatter"></div>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <button class="mode-pill active" data-sfilter="all">全部来源</button>
+          <button class="mode-pill" data-sfilter="paper">📄 学术论文</button>
+          <button class="mode-pill" data-sfilter="web">🌐 网页 / 开源 / 社区</button>
+          <button class="mode-pill" data-sfilter="fulltext">📖 已读全文</button>
+          <button class="ghost small" id="clear-year-btn" class="hidden" style="display:none">✕ 清除年份过滤</button>
+          <input id="src-search" placeholder="搜索标题、作者、会议/期刊或摘要关键词…" style="max-width:320px;margin-left:auto">
+        </div>
+        <div id="sources-grid" class="src-grid"></div>
+      </div>
+
+      <!-- Pane 4: Fact-Check Inspector -->
+      <div id="pane-verify" class="ws-pane hidden">
+        <div id="verify-inspector"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Right Slide-Over Source Inspector Drawer -->
+<aside id="src-drawer" class="hidden">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <span class="pill ok" id="drw-badge">文献详情</span>
+    <button class="ghost small" id="drw-close">✕</button>
+  </div>
+  <div id="drw-body" style="display:flex;flex-direction:column;gap:10px"></div>
+</aside>
+
+<!-- Floating Quick Dock -->
+<div class="quick-dock">
+  <button class="pri-btn small" id="copilot-btn" title="打开伴读 AI 助手，针对当前报告与文献追问" style="border-radius:999px;padding:6px 14px;font-size:12.5px">💬 向报告追问</button>
+  <button class="ghost small" id="focus-btn" title="切换沉浸式专注阅读模式" style="border-radius:999px">📖 专注阅读</button>
+  <button class="ghost small" id="top-btn" title="回到顶部" style="border-radius:999px">↑ 顶部</button>
+</div>
+
+<!-- Item 1: Ask This Report Copilot Floating Window -->
+<aside id="copilot-panel" class="hidden">
+  <div class="cp-rz cp-rz-nw" data-dir="nw" title="拖拽左上角调整窗口大小"></div>
+  <div class="cp-rz cp-rz-n" data-dir="n" title="拖拽上边缘调整高度"></div>
+  <div class="cp-rz cp-rz-w" data-dir="w" title="拖拽左边缘调整宽度"></div>
+  <div class="cp-rz cp-rz-e" data-dir="e"></div>
+  <div class="cp-rz cp-rz-s" data-dir="s"></div>
+  <div class="cp-rz cp-rz-ne" data-dir="ne"></div>
+  <div class="cp-rz cp-rz-sw" data-dir="sw"></div>
+  <div class="cp-rz cp-rz-se" data-dir="se"></div>
+  <div class="cp-head" id="cp-drag-head" title="按住标题栏可拖动位置 · 拖拽四周边缘或左上角可自由缩放大小">
+    <span>✦ Research Copilot · 报告伴读助手 <span style="font-size:11px;opacity:.8;font-weight:500">（可拖拽边缘缩放）</span></span>
+    <div style="display:flex;gap:6px">
+      <button type="button" class="ghost small" id="cp-max" title="一键放大/还原窗口尺寸" style="padding:2px 8px;font-size:11.5px;background:rgba(255,255,255,0.18);color:#fff;border:0">⛶ 放大</button>
+      <button type="button" class="ghost small" id="cp-clear" style="padding:2px 8px;font-size:11.5px;background:rgba(255,255,255,0.18);color:#fff;border:0">清空</button>
+      <button type="button" class="ghost small" id="cp-close" style="padding:2px 8px;font-size:11.5px;background:rgba(255,255,255,0.18);color:#fff;border:0">✕</button>
+    </div>
+  </div>
+  <div class="cp-msgs" id="cp-msgs">
+    <div class="cp-msg bot">👋 你好！我是当前报告的伴读助手。你可以针对报告中的**技术细节、实验指标、论文对比**向我提问（支持 **SSE 逐字流式回复** 与 **一键插入报告**），也可在正文中**划词选中任意句子**直接唤起 AI 菜单。</div>
+  </div>
+  <div id="cp-quote-bar" class="hidden">
+    <span style="color:var(--pri);font-weight:700">❝ 引用段落：</span>
+    <span id="cp-quote-txt"></span>
+    <button type="button" class="ghost small" id="cp-quote-clear" style="padding:1px 6px;font-size:11px">✕</button>
+  </div>
+  <div class="cp-presets">
+    <button type="button" class="cp-preset" data-q="请基于这份报告提炼一份 3 分钟技术汇报大纲（含核心数据与结论）">🎯 提炼汇报大纲</button>
+    <button type="button" class="cp-preset" data-q="对比本报告中排名前三的代表性方案各自的优缺点与适用场景">⚖️ 方案优劣对比</button>
+    <button type="button" class="cp-preset" data-q="总结当前研究中最关键的未解难题与未来 1-2 年最具潜力的突破方向">🚀 开放挑战与突破口</button>
+  </div>
+  <div class="cp-foot">
+    <input type="text" id="cp-input" placeholder="针对本报告追问细节（回车流式发送）…" style="flex:1">
+    <button type="button" class="pri-btn small" id="cp-send" style="padding:6px 14px">发送</button>
+  </div>
+</aside>
+
+<!-- Phase 3 Item 4: Text Selection Floating AI Toolbar -->
+<div id="sel-toolbar" class="hidden">
+  <button type="button" class="sel-btn" id="sel-explain" title="让伴读 Copilot 结合报告与引文深入解释选中概念">💡 解释概念</button>
+  <button type="button" class="sel-btn" id="sel-ask" title="将选中句子作为引用上下文带入伴读窗口追问">🔍 追问此段</button>
+  <button type="button" class="sel-btn" id="sel-rewrite" title="对选中句子所在段落进行 AI 深度扩写与润色（支持撤回）">✨ 扩写润色</button>
+  <span class="sel-sep"></span>
+  <button type="button" class="sel-btn" id="sel-copy" title="复制选中文本">⎘ 复制</button>
+</div>
+
+<!-- Item 8: Dual-Report Side-by-Side Comparison Modal -->
+<div id="diff-modal-backdrop" class="modal-backdrop hidden">
+  <div class="diff-modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div>
+        <b style="font-size:17px">⚖️ 双报告并排对比与演进分析</b>
+        <div style="font-size:12.5px;color:var(--muted);margin-top:2px">对比两份报告的文献覆盖度、核验可信度、共有/独有引文及核心结论</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:12.5px;color:var(--muted)">选择对比报告：</span>
+        <select id="diff-select" style="width:320px"></select>
+        <button type="button" class="ghost small" id="diff-close">✕ 关闭</button>
+      </div>
+    </div>
+    <div id="diff-body" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<div id="tip" class="hidden"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const ACTIVE = ["running", "queued", "waiting_review"];
+const CONTINUABLE = ["error", "cancelled", "interrupted"];
+const STEP_ORDER = ["plan", "review_plan", "research", "reflect", "write_report", "verify_report"];
+
+let currentMd = "", currentName = "report.md", savedName = null, es = null, runId = null, runStatus = "", lastEventId = -1;
+let refs = {};
+let stateData = { research_type: "", plan: [], findings: [], references: [], verification: {} };
+let srcFilter = "all", srcYearFilter = "", chaptersCollapsed = false;
+let uploadedLocalDocs = [];
+let copilotHistory = [];
+let chapterUndoMap = {};
+let reportUndoStack = [];
+let copilotQuotedSnippet = "";
+let currentSelectionText = "";
+let currentSelectionChapter = "";
+
+marked.setOptions({ breaks: true, gfm: true });
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmtTime = s => (s || "").replace("T", " ").slice(5, 16);
+
+// SVG Donut Ring Helper
+function svgRing(pct, color = "var(--pri)") {
+  const p = Math.max(0, Math.min(100, Math.round(pct || 0)));
+  const r = 21, c = 2 * Math.PI * r, off = c - (p / 100) * c;
+  return `<svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="${r}" fill="none" stroke="var(--surface-3)" stroke-width="5"/><circle cx="26" cy="26" r="${r}" fill="none" stroke="${color}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/></svg><span class="ring-txt">${p}%</span>`;
+}
+
+// Top Reading Progress & Quick Dock + TOC ScrollSpy
+window.addEventListener("scroll", () => {
+  const h = document.documentElement.scrollHeight - innerHeight;
+  $("read-progress").style.width = h > 100 ? Math.min(100, (scrollY / h) * 100) + "%" : "0%";
+  if (typeof updateTocScrollSpy === "function") updateTocScrollSpy();
+}, { passive: true });
+$("top-btn").onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+$("focus-btn").onclick = () => {
+  const on = document.body.classList.toggle("focus-mode");
+  $("focus-btn").textContent = on ? "✕ 退出专注" : "📖 专注阅读";
+};
+
+// ---------------- Theme Toggle ----------------
+function initMermaidTheme(t) {
+  if (!window.mermaid) return;
+  try {
+    window.mermaid.initialize({
+      startOnLoad: false,
+      theme: t === "dark" ? "dark" : "neutral",
+      securityLevel: "strict",
+      flowchart: { htmlLabels: true, curve: "basis" },
+    });
+  } catch {}
+}
+function applyTheme(t) {
+  document.documentElement.dataset.theme = t;
+  $("theme-btn").textContent = t === "dark" ? "☀️" : "🌙";
+  localStorage.setItem("dr_theme", t);
+  initMermaidTheme(t);
+  // Re-render mermaid diagrams if report is visible
+  if (currentMd && !$("result").classList.contains("hidden")) {
+    renderMermaidNodes($("report"));
+  }
+}
+applyTheme(localStorage.getItem("dr_theme") || "light");
+$("theme-btn").onclick = () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+
+// ---------------- Composer Interactions ----------------
+const MODE_PRESETS = {
+  fast:     { max_sub_questions: 3, iterations: 0, verify: "annotate", fulltext: false },
+  standard: { max_sub_questions: 5, iterations: 1, verify: "annotate", fulltext: true },
+  deep:     { max_sub_questions: 8, iterations: 2, verify: "revise",   fulltext: true },
+};
+document.querySelectorAll(".mode-pill[data-mode]").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".mode-pill[data-mode]").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const p = MODE_PRESETS[btn.dataset.mode];
+    $("max_sub_questions").value = p.max_sub_questions;
+    $("iterations").value = p.iterations;
+    $("verify").value = p.verify;
+    $("fulltext").checked = p.fulltext;
+    syncChipToggles();
+  };
+});
+function syncChipToggles() {
+  [["review", "lbl-review"], ["fulltext", "lbl-fulltext"], ["relevance_filter", "lbl-filter"]].forEach(([id, lid]) => {
+    $(lid).classList.toggle("on", $(id).checked);
+  });
+}
+["review", "fulltext", "relevance_filter"].forEach(id => $(id).addEventListener("change", syncChipToggles));
+$("toggle-adv").onclick = () => $("adv-box").classList.toggle("hidden");
+document.querySelectorAll(".insp-chip").forEach(c => {
+  c.onclick = () => { $("topic").value = c.dataset.q; $("topic").focus(); };
+});
+$("new-research").onclick = () => {
+  document.body.classList.remove("focus-mode");
+  runId = null; resetView();
+  $("progress").classList.add("hidden");
+  $("topic").focus();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+// ---------------- Workspace Pane Tabs ----------------
+function switchPane(paneId) {
+  document.querySelectorAll(".ws-tab").forEach(b => b.classList.toggle("active", b.dataset.pane === paneId));
+  document.querySelectorAll(".ws-pane").forEach(p => p.classList.toggle("hidden", p.id !== paneId));
+}
+document.querySelectorAll(".ws-tab").forEach(b => b.onclick = () => switchPane(b.dataset.pane));
+
+// ---------------- Stepper & Sub-question Matrix ----------------
+function updateStepper(activeNode, allDone = false) {
+  const idx = STEP_ORDER.indexOf(activeNode);
+  document.querySelectorAll("#stepper .step-node").forEach((el, i) => {
+    el.classList.remove("active", "done");
+    if (allDone || (idx >= 0 && i < idx)) el.classList.add("done");
+    else if (idx >= 0 && i === idx) el.classList.add(activeNode === "verify_report" ? "done" : "active");
+  });
+}
+
+function upsertPlanCards(plan, researchType) {
+  if (researchType) {
+    stateData.research_type = researchType;
+    const b = $("run-type-badge");
+    const map = { academic: "🎓 学术论文导向", industry: "🏭 业界与开源导向", mixed: "⚖️ 学术 + 业界综合" };
+    b.textContent = map[researchType] || researchType;
+    b.classList.remove("hidden");
+  }
+  if (!Array.isArray(plan) || !plan.length) return;
+  const existingIds = new Set(stateData.plan.map(q => q.id));
+  for (const q of plan) if (!existingIds.has(q.id)) stateData.plan.push(q);
+  renderSqGrid();
+}
+
+function renderSqGrid() {
+  const grid = $("sq-grid");
+  const findingMap = {};
+  for (const f of stateData.findings) findingMap[f.sub_question_id] = f;
+  grid.innerHTML = "";
+  for (const q of stateData.plan) {
+    const f = findingMap[q.id];
+    const card = document.createElement("div");
+    card.className = "sq-card " + (f ? "done" : (ACTIVE.includes(runStatus) ? "running" : ""));
+    const ftCount = f ? (f.sources || []).filter(s => s.has_fulltext || s.fulltext).length : 0;
+    const statHtml = f
+      ? `<span class="sq-stat ok">✓ ${(f.sources || []).length} 篇来源${ftCount ? ` · ${ftCount} 篇全文` : ""}</span>`
+      : (ACTIVE.includes(runStatus) ? `<span class="sq-stat"><span class="spin"></span>检索分析中…</span>` : `<span class="sq-stat">待执行</span>`);
+    const srcs = (q.sources || []).map(s => `<span class="src-chip ${esc(s)}">${esc(s)}</span>`).join("");
+    const qs = (q.search_queries || []).map(x => `<span class="q-chip">${esc(x)}</span>`).join("");
+    const errCount = f && f.errors ? f.errors.length : 0;
+    card.innerHTML = `
+      <div class="sq-top">
+        <span class="sq-id">${esc(q.id)}</span>
+        ${statHtml}
+      </div>
+      <div class="sq-q">${esc(q.question)}</div>
+      <div class="sq-tags">${srcs}</div>
+      ${qs ? `<div class="sq-tags">${qs}</div>` : ""}
+      ${f && f.coverage ? `<div style="font-size:11.5px;color:var(--muted)">ℹ️ ${esc(f.coverage)}</div>` : ""}
+      ${errCount ? `<details class="sq-warn"><summary>⚠️ ${errCount} 项检索源已自动降级/跳过</summary><div style="margin-top:4px;color:var(--muted)">${f.errors.map(e => esc(e.slice(0, 140))).join("<br>")}</div></details>` : ""}
+    `;
+    grid.appendChild(card);
+  }
+}
+
+function parseLegacyNodeEvent(ev) {
+  const txt = ev.text || "";
+  if (ev.node === "plan" || ev.node === "reflect") {
+    const mType = txt.match(/类型:\s*(\w+)/);
+    const tasks = [];
+    const lines = txt.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      const m = lines[i].match(/^-\s*\[(q\d+)\]\s*(.+)$/);
+      if (m) {
+        const next = lines[i + 1] || "";
+        const ms = next.match(/数据源:\s*([^|]+)\|\s*检索词:\s*(.+)$/);
+        tasks.push({
+          id: m[1], question: m[2].trim(),
+          sources: ms ? ms[1].split(",").map(s => s.trim()).filter(Boolean) : [],
+          search_queries: ms ? ms[2].split(";").map(s => s.trim()).filter(Boolean) : [],
+        });
+      }
+    }
+    if (tasks.length) upsertPlanCards(tasks, mType ? mType[1] : "");
+  } else if (ev.node === "research") {
+    const m = txt.match(/\[(q\d+)\]\s*(.+?)\s*——\s*(\d+)\s*个来源(?:，(\d+)\s*篇读取了全文)?/);
+    if (m) {
+      const id = m[1], q = m[2], nSrc = Number(m[3]), nFt = Number(m[4] || 0);
+      if (!stateData.plan.some(x => x.id === id)) stateData.plan.push({ id, question: q, sources: [], search_queries: [] });
+      if (!stateData.findings.some(x => x.sub_question_id === id)) {
+        const stubSources = Array.from({ length: nSrc }, (_, i) => ({ has_fulltext: i < nFt }));
+        stateData.findings.push({ sub_question_id: id, question: q, summary: "", sources: stubSources, errors: [] });
+      }
+      renderSqGrid();
+    }
+  }
+}
+
+// ---------------- Report Modularization, 7 Intelligent UI Features & Citations ----------------
+function parseRefs(md) {
+  const out = {};
+  const i = md.search(/^##\s*参考文献/m);
+  if (i < 0) return out;
+  for (const m of md.slice(i).matchAll(/^\[(\d+)\]\s+(.+)$/gm)) out[m[1]] = m[2].trim();
+  return out;
+}
+function linkify(text) {
+  return esc(text)
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+}
+
+// Parse Fact-Check issues from stateData.verification AND markdown "## 事实核验说明"
+function collectVerifyIssues() {
+  const list = [...((stateData.verification && stateData.verification.issues) || [])];
+  if (list.length) return list;
+  const idx = currentMd.search(/^##\s*事实核验说明/m);
+  if (idx < 0) return list;
+  const sec = currentMd.slice(idx);
+  for (const m of sec.matchAll(/^-\s*(⚠️|🔶)\s*\*\*(.+?)\*\*[：:]\s*(.+)$/gm)) {
+    list.push({
+      verdict: m[1] === "⚠️" ? "unsupported" : "partial",
+      claim: m[2].trim(),
+      reason: m[3].trim(),
+    });
+  }
+  return list;
+}
+
+// Helper: Extract unique [n] citation numbers inside a DOM element
+function extractCiteNums(el) {
+  const s = new Set();
+  el.querySelectorAll(".cite[data-n]").forEach(c => {
+    const n = Number(c.dataset.n);
+    if (n > 0) s.add(n);
+  });
+  return [...s].sort((a, b) => a - b);
+}
+
+// Helper: Build Block Spotlight Action Bar (Feature 6: Filter citations in drawer + Copy block)
+function createBlockSpotlightBar(targetEl, labelTitle) {
+  const nums = extractCiteNums(targetEl);
+  const bar = document.createElement("span");
+  bar.className = "blk-bar";
+  if (nums.length) {
+    const citeBtn = document.createElement("button");
+    citeBtn.type = "button";
+    citeBtn.className = "blk-btn";
+    citeBtn.textContent = `🔍 本块引文 (${nums.length})`;
+    citeBtn.title = "在右侧抽屉集中检视本段落引用的全部文献";
+    citeBtn.onclick = e => {
+      e.stopPropagation();
+      openMultiSourceDrawer(nums, labelTitle || "段落关联引文");
+    };
+    bar.appendChild(citeBtn);
+  }
+  const cpBtn = document.createElement("button");
+  cpBtn.type = "button";
+  cpBtn.className = "blk-btn";
+  cpBtn.textContent = "⎘ 复制";
+  cpBtn.title = "复制本段纯文本";
+  cpBtn.onclick = async e => {
+    e.stopPropagation();
+    const clone = targetEl.cloneNode(true);
+    clone.querySelectorAll(".blk-bar").forEach(b => b.remove());
+    await navigator.clipboard.writeText(clone.innerText.trim());
+    cpBtn.textContent = "✓ 已复制";
+    setTimeout(() => { cpBtn.textContent = "⎘ 复制"; }, 1400);
+  };
+  bar.appendChild(cpBtn);
+  return bar;
+}
+
+// Feature 4: Interactive Data Tables (Search Filter + Column Sort + Table/Card/Chart 3-Way View Switcher)
+function extractFirstMetricNumber(txt) {
+  const s = String(txt || "").replace(/\[\d+(?:\s*[,，]\s*\d+)*\]/g, "");
+  const mPct = s.match(/([+-]?\d+(?:\.\d+)?)\s*%/);
+  if (mPct) return { val: Math.abs(parseFloat(mPct[1])), unit: "%", raw: mPct[0] };
+  const mMult = s.match(/(\d+(?:\.\d+)?)\s*(?:x|×|倍)/i);
+  if (mMult) return { val: parseFloat(mMult[1]), unit: "x", raw: mMult[0] };
+  const mScale = s.match(/(\d+(?:\.\d+)?)\s*(B|M|K|ms|tokens\/s|tok\/s)/i);
+  if (mScale) return { val: parseFloat(mScale[1]), unit: mScale[2], raw: mScale[0] };
+  const mNum = s.match(/\b(\d+(?:\.\d+)?)\b/);
+  if (mNum && (Number(mNum[1]) < 1990 || Number(mNum[1]) > 2035)) {
+    return { val: parseFloat(mNum[1]), unit: "", raw: mNum[1] };
+  }
+  return null;
+}
+
+function enhanceTables(box) {
+  box.querySelectorAll("table").forEach(tb => {
+    if (tb.closest(".table-box")) return;
+    const headers = [...tb.querySelectorAll("thead th, tr:first-child th")].map(th => th.textContent.trim());
+    const tbody = tb.querySelector("tbody") || tb;
+    const rows = [...tbody.querySelectorAll("tr")].filter(tr => !tr.querySelector("th"));
+    if (!rows.length) return;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "table-box";
+
+    const toolbar = document.createElement("div");
+    toolbar.className = "tb-toolbar";
+    toolbar.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="pill ok">📊 结构化对比矩阵</span>
+        <span style="font-size:12px;color:var(--muted)" class="tb-cnt">共 ${rows.length} 项（点击表头可排序）</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <input type="text" class="tb-filter" placeholder="🔍 筛选表格行（方法/机构/指标）…">
+        <button type="button" class="ch-view-btn tb-card-btn">🎴 名片视图</button>
+        <button type="button" class="ch-view-btn tb-chart-btn">📈 图表视图</button>
+      </div>
+    `;
+
+    const scroll = document.createElement("div");
+    scroll.className = "table-scroll";
+    tb.replaceWith(wrapper);
+    scroll.appendChild(tb);
+
+    // Build Companion Work Cards Grid
+    const cardsGrid = document.createElement("div");
+    cardsGrid.className = "tb-cards-grid hidden";
+
+    // Build Companion Auto-Chart Box (Item 4)
+    const chartBox = document.createElement("div");
+    chartBox.className = "tb-chart-box hidden";
+
+    function rebuildWorkCards(visibleRows) {
+      cardsGrid.innerHTML = "";
+      for (const tr of visibleRows) {
+        if (tr.classList.contains("hidden")) continue;
+        const cells = [...tr.querySelectorAll("td")];
+        if (!cells.length) continue;
+        const wc = document.createElement("div");
+        wc.className = "work-card";
+        const titleHtml = cells[0].innerHTML;
+        let fieldsHtml = "";
+        for (let i = 1; i < cells.length; i++) {
+          const lbl = headers[i] || `字段 ${i}`;
+          fieldsHtml += `<div class="wc-row"><span class="wc-lbl">${esc(lbl)}</span><div>${cells[i].innerHTML}</div></div>`;
+        }
+        wc.innerHTML = `<div class="wc-title">${titleHtml}</div>${fieldsHtml}`;
+        cardsGrid.appendChild(wc);
+      }
+    }
+
+    function rebuildChartView(visibleRows, selectedCol = -1) {
+      const activeRows = visibleRows.filter(r => !r.classList.contains("hidden"));
+      // Find columns that have extractable numbers
+      const candidateCols = [];
+      for (let c = 1; c < headers.length; c++) {
+        let hits = 0;
+        for (const r of activeRows) {
+          if (extractFirstMetricNumber(r.children[c]?.textContent || "")) hits++;
+        }
+        if (hits >= Math.min(2, activeRows.length)) candidateCols.push(c);
+      }
+      const useCol = selectedCol >= 0 ? selectedCol : (candidateCols[candidateCols.length - 1] ?? -1);
+      const items = [];
+      for (const r of activeRows) {
+        const label = (r.children[0]?.textContent || "").replace(/\[\d+.*?\]/g, "").trim().slice(0, 28) || "项目";
+        if (useCol >= 0) {
+          const m = extractFirstMetricNumber(r.children[useCol]?.textContent || "");
+          if (m) items.push({ label, val: m.val, display: m.raw });
+        } else {
+          // Fallback: visualize information density / citation richness per work
+          const cites = r.querySelectorAll(".cite").length;
+          const words = (r.textContent || "").trim().length;
+          const score = cites * 25 + Math.round(words / 4);
+          items.push({ label, val: score, display: `${cites} 篇引文 · ${words} 字` });
+        }
+      }
+      const maxVal = Math.max(1, ...items.map(x => x.val));
+      const colButtons = candidateCols.map(c =>
+        `<button type="button" class="mode-pill ${c === useCol ? "active" : ""}" data-col="${c}">${esc(headers[c] || "指标 " + c)}</button>`
+      ).join("");
+
+      chartBox.innerHTML = `
+        <div class="tb-chart-head">
+          <div style="font-weight:700;font-size:13.5px;color:var(--fg)">
+            📊 ${useCol >= 0 ? `关键量化指标对比：${esc(headers[useCol])}` : "各代表性方案信息密度与引文支撑度对比"}
+          </div>
+          ${candidateCols.length > 1 ? `<div class="mode-pills">${colButtons}</div>` : ""}
+        </div>
+        <div>
+          ${items.length ? items.map(it => {
+            const pct = Math.max(6, Math.round((it.val / maxVal) * 100));
+            return `
+              <div class="chart-bar-row">
+                <div class="chart-bar-lbl" title="${esc(it.label)}">${esc(it.label)}</div>
+                <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%"></div></div>
+                <div class="chart-bar-val">${esc(it.display)}</div>
+              </div>
+            `;
+          }).join("") : `<div style="color:var(--muted);font-size:13px;text-align:center;padding:12px">当前筛选行中无可提取的量化数值</div>`}
+        </div>
+      `;
+      chartBox.querySelectorAll("[data-col]").forEach(btn => {
+        btn.onclick = () => rebuildChartView(visibleRows, Number(btn.dataset.col));
+      });
+    }
+
+    rebuildWorkCards(rows);
+    rebuildChartView(rows);
+
+    // Sortable Column Headers
+    tb.querySelectorAll("th").forEach((th, colIdx) => {
+      th.classList.add("sortable");
+      const ico = document.createElement("span");
+      ico.className = "sort-ico";
+      ico.textContent = "↕";
+      th.appendChild(ico);
+      let asc = true;
+      th.onclick = () => {
+        tb.querySelectorAll("th .sort-ico").forEach(x => { x.textContent = "↕"; });
+        ico.textContent = asc ? "↑" : "↓";
+        const sorted = [...rows].sort((a, b) => {
+          const ta = (a.children[colIdx]?.textContent || "").trim();
+          const tbTxt = (b.children[colIdx]?.textContent || "").trim();
+          const na = parseFloat(ta.replace(/[^0-9.-]/g, ""));
+          const nb = parseFloat(tbTxt.replace(/[^0-9.-]/g, ""));
+          if (!isNaN(na) && !isNaN(nb) && /\d/.test(ta) && /\d/.test(tbTxt)) {
+            return asc ? na - nb : nb - na;
+          }
+          return asc ? ta.localeCompare(tbTxt, "zh-CN") : tbTxt.localeCompare(ta, "zh-CN");
+        });
+        asc = !asc;
+        sorted.forEach(r => tbody.appendChild(r));
+        rebuildWorkCards(sorted);
+        rebuildChartView(sorted);
+      };
+    });
+
+    // Keyword Filter
+    const filterInput = toolbar.querySelector(".tb-filter");
+    const cntSpan = toolbar.querySelector(".tb-cnt");
+    filterInput.oninput = () => {
+      const q = filterInput.value.trim().toLowerCase();
+      let shown = 0;
+      for (const r of rows) {
+        const match = !q || r.textContent.toLowerCase().includes(q);
+        r.classList.toggle("hidden", !match);
+        if (match) shown++;
+      }
+      cntSpan.textContent = q ? `筛选出 ${shown} / ${rows.length} 项` : `共 ${rows.length} 项（点击表头可排序）`;
+      rebuildWorkCards(rows);
+      rebuildChartView(rows);
+    };
+
+    // 3-Way View Switcher (Table <-> Work Cards <-> Bar Chart)
+    const cardBtn = toolbar.querySelector(".tb-card-btn");
+    const chartBtn = toolbar.querySelector(".tb-chart-btn");
+    let curMode = "table";
+    function setTableMode(m) {
+      curMode = m;
+      scroll.classList.toggle("hidden", m !== "table");
+      cardsGrid.classList.toggle("hidden", m !== "cards");
+      chartBox.classList.toggle("hidden", m !== "chart");
+      cardBtn.textContent = m === "cards" ? "📊 返回表格" : "🎴 名片视图";
+      chartBtn.textContent = m === "chart" ? "📊 返回表格" : "📈 图表视图";
+    }
+    cardBtn.onclick = () => setTableMode(curMode === "cards" ? "table" : "cards");
+    chartBtn.onclick = () => setTableMode(curMode === "chart" ? "table" : "chart");
+
+    wrapper.append(toolbar, scroll, cardsGrid, chartBox);
+  });
+}
+
+// Feature 2: Bullet List Auto-Cardification (Feature Grid) & Sub-section (H3) Multi-Column Cards
+function enhanceListsAndSubsections(body, headRight, chTitle) {
+  // 2a) Bullet lists with bold lead-ins -> .feature-grid
+  body.querySelectorAll("ul").forEach(ul => {
+    if (ul.classList.contains("takeaways-bento") || ul.closest(".table-box")) return;
+    const items = [...ul.children].filter(el => el.tagName === "LI");
+    if (items.length < 2) return;
+    // Check if majority of LI items start with <strong> or have bold concept title
+    const boldItems = items.filter(li => {
+      const firstEl = li.firstElementChild;
+      return firstEl && (firstEl.tagName === "STRONG" || firstEl.tagName === "B") && firstEl.textContent.length <= 42;
+    });
+    if (boldItems.length < Math.ceil(items.length * 0.6)) return;
+
+    ul.classList.add("feature-grid");
+    for (const li of items) {
+      li.className = "feature-card";
+      const firstEl = li.firstElementChild;
+      if (firstEl && (firstEl.tagName === "STRONG" || firstEl.tagName === "B")) {
+        const titleText = firstEl.innerHTML;
+        firstEl.remove();
+        let restHtml = li.innerHTML.replace(/^\s*[：:——-]\s*/, "");
+        li.innerHTML = `
+          <div class="fc-head"><span class="fc-title-txt">${titleText}</span></div>
+          <div class="fc-body">${restHtml}</div>
+        `;
+        const bar = createBlockSpotlightBar(li, firstEl.textContent.trim());
+        li.querySelector(".fc-head").appendChild(bar);
+      }
+    }
+  });
+
+  // 2b) Chapters with >= 2 H3 sub-sections -> wrap each H3 block in .subsec-card & add Grid/Linear toggle
+  const directNodes = [...body.childNodes];
+  const h3Count = directNodes.filter(n => n.nodeType === 1 && n.tagName === "H3").length;
+  if (h3Count >= 2) {
+    const preWrapFrag = document.createDocumentFragment();
+    const subsecWrap = document.createElement("div");
+    subsecWrap.className = "subsec-wrap grid-mode";
+    let curSubCard = null;
+
+    for (const n of directNodes) {
+      if (n.nodeType === 1 && n.tagName === "H3") {
+        curSubCard = document.createElement("div");
+        curSubCard.className = "subsec-card";
+        curSubCard.appendChild(n);
+        subsecWrap.appendChild(curSubCard);
+      } else if (curSubCard) {
+        curSubCard.appendChild(n);
+      } else {
+        preWrapFrag.appendChild(n);
+      }
+    }
+
+    // Add Spotlight action bar to each H3 subsec-card and make wide tables span all columns
+    [...subsecWrap.children].forEach(sc => {
+      const h3 = sc.querySelector("h3");
+      if (h3) {
+        h3.style.justifyContent = "space-between";
+        const titleSpan = document.createElement("span");
+        titleSpan.style.display = "inline-flex";
+        titleSpan.style.alignItems = "center";
+        titleSpan.style.gap = "8px";
+        titleSpan.innerHTML = h3.innerHTML;
+        h3.innerHTML = "";
+        h3.appendChild(titleSpan);
+        h3.appendChild(createBlockSpotlightBar(sc, titleSpan.textContent.trim()));
+      }
+      if (sc.querySelector(".table-box, .mermaid-card")) {
+        sc.style.gridColumn = "1 / -1";
+      }
+    });
+
+    body.innerHTML = "";
+    body.append(preWrapFrag, subsecWrap);
+
+    // Add Grid / Linear View Switcher Button in Chapter Header
+    const viewBtn = document.createElement("button");
+    viewBtn.type = "button";
+    viewBtn.className = "ch-view-btn";
+    viewBtn.textContent = "☰ 线性视图";
+    viewBtn.title = "在多列分栏卡片与单列线性阅读之间切换";
+    viewBtn.onclick = e => {
+      e.stopPropagation();
+      const isGrid = subsecWrap.classList.toggle("grid-mode");
+      viewBtn.textContent = isGrid ? "☰ 线性视图" : "⊞ 分栏卡片";
+    };
+    headRight.prepend(viewBtn);
+  }
+}
+
+// Item 2: Section Co-Editor (Local AI Rewrite of a single ## Chapter with Multi-Level Undo)
+function normChapterKey(chTitle) {
+  return String(chTitle || "").replace(/^\d+[\s.、]*/, "").trim();
+}
+
+function syncUndoBtn() {
+  const btn = $("undo-report-btn");
+  if (!btn) return;
+  btn.classList.toggle("hidden", reportUndoStack.length === 0);
+  if (reportUndoStack.length) {
+    btn.textContent = `↩ 撤回修改 (${reportUndoStack.length})`;
+  }
+}
+
+async function saveAndRenderReport(nextMd) {
+  if (savedName) {
+    await fetch("/api/reports/" + encodeURIComponent(savedName), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ report: nextMd }),
+    });
+  }
+  render(nextMd);
+  syncUndoBtn();
+}
+
+function extractSectionMarkdownByTitle(md, chTitle) {
+  const lines = md.split("\n");
+  let startIdx = -1, endIdx = lines.length;
+  const cleanTarget = normChapterKey(chTitle);
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^##\s+(.+)$/);
+    if (m) {
+      const curClean = normChapterKey(m[1]);
+      if (startIdx < 0 && (m[1].trim() === chTitle || curClean === cleanTarget || m[1].includes(cleanTarget))) {
+        startIdx = i;
+      } else if (startIdx >= 0) {
+        endIdx = i;
+        break;
+      }
+    }
+  }
+  if (startIdx < 0) return null;
+  return {
+    before: lines.slice(0, startIdx).join("\n"),
+    section: lines.slice(startIdx, endIdx).join("\n"),
+    after: lines.slice(endIdx).join("\n"),
+  };
+}
+
+async function undoChapterAiRewrite(chTitle) {
+  const key = normChapterKey(chTitle);
+  const stack = chapterUndoMap[key];
+  if (!stack || !stack.length) return;
+  const prevSectionMd = stack.pop();
+  const parts = extractSectionMarkdownByTitle(currentMd, chTitle);
+  if (parts) {
+    if (reportUndoStack.length) reportUndoStack.pop();
+    const nextMd = [parts.before, prevSectionMd.trim(), parts.after].filter(Boolean).join("\n\n");
+    await saveAndRenderReport(nextMd);
+  } else if (reportUndoStack.length) {
+    const prevFull = reportUndoStack.pop();
+    await saveAndRenderReport(prevFull);
+  }
+}
+
+async function rewriteChapterWithAi(chTitle, instruction, btnEl) {
+  const parts = extractSectionMarkdownByTitle(currentMd, chTitle);
+  if (!parts) return alert("未能在 Markdown 源码中定位到该章节标题：" + chTitle);
+  const origTxt = btnEl.textContent;
+  btnEl.disabled = true;
+  btnEl.innerHTML = `<span class="spin"></span>AI 重写中…`;
+  try {
+    const r = await fetch("/api/copilot/rewrite-section", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        topic: $("run-title")?.textContent || currentName,
+        section_markdown: parts.section,
+        instruction,
+        references: stateData.references || [],
+      }),
+    });
+    if (!r.ok) throw new Error(await r.text());
+    const d = await r.json();
+    if (!d.markdown) throw new Error("返回内容为空");
+
+    // Push original chapter markdown and full report markdown onto undo stacks
+    const key = normChapterKey(chTitle);
+    if (!chapterUndoMap[key]) chapterUndoMap[key] = [];
+    chapterUndoMap[key].push(parts.section);
+    reportUndoStack.push(currentMd);
+
+    const nextMd = [parts.before, d.markdown.trim(), parts.after].filter(Boolean).join("\n\n");
+    await saveAndRenderReport(nextMd);
+  } catch (err) {
+    alert("章节 AI 精炼失败：" + err.message);
+    btnEl.disabled = false;
+    btnEl.textContent = origTxt;
+  }
+}
+
+// Feature 1 & Item 2: Chapter Source Ecosystem Pill + AI Section Co-Editor (with Undo) + Auto TL;DR Callout Banner
+function enhanceChapterHeaderAndTldr(card, body, headRight, chTitle) {
+  if (/参考文献|事实核验说明/.test(chTitle)) return;
+
+  const chKey = normChapterKey(chTitle);
+  const hasUndo = chapterUndoMap[chKey] && chapterUndoMap[chKey].length > 0;
+
+  // Item 2: Add Section AI Co-Editor Dropdown Button + Instant Undo Button
+  const aiWrap = document.createElement("div");
+  aiWrap.className = "ch-ai-wrap";
+  const aiBtn = document.createElement("button");
+  aiBtn.type = "button";
+  aiBtn.className = "ch-src-pill";
+  aiBtn.innerHTML = hasUndo ? `✨ AI 再精炼` : `✨ AI 精炼`;
+  aiBtn.title = "使用 AI 局部重写、扩写或表格化本章节（保持引文编号不变）";
+  const aiMenu = document.createElement("div");
+  aiMenu.className = "ch-ai-menu hidden";
+  const presets = [
+    ["🔍 深入扩写技术细节与对比", "请深入扩写本章节的技术原理细节、方法对比与量化论据，保持所有 [n] 引用号准确对应。"],
+    ["📊 增补结构化 Markdown 对比表", "请在本章节中提炼并增补一个结构化 Markdown 对比表（对比各方案的核心机制、优势与局限），保留原有分析与 [n] 引用。"],
+    ["⚡ 提炼为高密度要点卡片格式", "请将本章节冗余段落精简改写为 `- **核心概念/结论**：具体分析... [n]` 的高信息密度要点列表。"],
+    ["✍️ 自定义重写指令…", "custom"],
+  ];
+  for (const [label, inst] of presets) {
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = "ch-ai-item";
+    item.textContent = label;
+    item.onclick = e => {
+      e.stopPropagation();
+      aiMenu.classList.add("hidden");
+      let finalInst = inst;
+      if (inst === "custom") {
+        finalInst = prompt(`请输入对章节「${chTitle}」的重写或精炼要求：`, "强化工程落地与开源方案对比，保留所有 [n] 引用编号");
+        if (!finalInst || !finalInst.trim()) return;
+      }
+      rewriteChapterWithAi(chTitle, finalInst, aiBtn);
+    };
+    aiMenu.appendChild(item);
+  }
+  aiBtn.onclick = e => {
+    e.stopPropagation();
+    document.querySelectorAll(".ch-ai-menu").forEach(m => { if (m !== aiMenu) m.classList.add("hidden"); });
+    aiMenu.classList.toggle("hidden");
+  };
+  aiWrap.append(aiBtn, aiMenu);
+  headRight.prepend(aiWrap);
+
+  if (hasUndo) {
+    const undoBtn = document.createElement("button");
+    undoBtn.type = "button";
+    undoBtn.className = "ch-src-pill";
+    undoBtn.style.color = "var(--warn)";
+    undoBtn.style.borderColor = "var(--warn)";
+    undoBtn.style.background = "var(--warn-soft)";
+    undoBtn.innerHTML = `↩ 撤回精炼 (${chapterUndoMap[chKey].length})`;
+    undoBtn.title = "撤回本章节的 AI 精炼修改，恢复上一版原文";
+    undoBtn.onclick = e => {
+      e.stopPropagation();
+      undoChapterAiRewrite(chTitle);
+    };
+    headRight.prepend(undoBtn);
+  }
+
+  // 1a) Scan chapter citations & build Source Ecosystem Pill
+  const nums = extractCiteNums(body);
+  if (nums.length) {
+    const originCounts = {};
+    for (const n of nums) {
+      const meta = (stateData.references || [])[n - 1];
+      const raw = refs[String(n)] || "";
+      let orig = (meta && (meta.origin || meta.source_type)) || (/arxiv\.org/i.test(raw) ? "arXiv" : /github\.com/i.test(raw) ? "GitHub" : "文献");
+      orig = orig.replace(/^semantic_scholar$/i, "S2").replace(/^openalex$/i, "OpenAlex").replace(/^arxiv$/i, "arXiv");
+      originCounts[orig] = (originCounts[orig] || 0) + 1;
+    }
+    const topOrigins = Object.entries(originCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 2)
+      .map(([k, v]) => `${k}×${v}`)
+      .join(" · ");
+
+    const srcPill = document.createElement("button");
+    srcPill.type = "button";
+    srcPill.className = "ch-src-pill";
+    srcPill.innerHTML = `📚 本节 ${nums.length} 篇支撑${topOrigins ? ` <span style="color:var(--muted)">(${esc(topOrigins)})</span>` : ""} · <span style="color:var(--pri)">🔍 检视</span>`;
+    srcPill.title = "点击在右侧抽屉查看本章节引用的全部文献";
+    srcPill.onclick = e => {
+      e.stopPropagation();
+      openMultiSourceDrawer(nums, `章节引文：${chTitle}`);
+    };
+    headRight.prepend(srcPill);
+  }
+
+  // 1b) Chapter TL;DR Callout Banner (skip if Executive Summary already has takeaways-bento)
+  if (body.querySelector(".takeaways-bento")) return;
+  let tldrText = "";
+  const firstP = body.querySelector(":scope > p") || body.querySelector("p");
+  if (firstP && firstP.textContent.trim().length >= 25) {
+    const raw = firstP.textContent.replace(/\[\d+(?:\s*[,，]\s*\d+)*\]/g, "").replace(/[⚠️🔶]/g, "").trim();
+    const m = raw.match(/^(.{20,135}?[。！？；.!?;])/);
+    tldrText = m ? m[1] : (raw.length > 125 ? raw.slice(0, 122) + "…" : raw);
+  } else {
+    const h3s = [...body.querySelectorAll("h3")].map(h => h.textContent.replace(/🔍.*$/, "").trim()).filter(Boolean);
+    if (h3s.length) {
+      tldrText = `本节围绕 ${h3s.slice(0, 4).map(s => `「${s}」`).join("、")} 等 ${h3s.length} 个核心子方向展开系统剖析与对比。`;
+    }
+  }
+  if (tldrText) {
+    const tldr = document.createElement("div");
+    tldr.className = "ch-tldr";
+    tldr.innerHTML = `
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <span class="ch-tldr-badge">✨ 章节导读</span>
+        <span>${esc(tldrText)}</span>
+      </div>
+    `;
+    body.prepend(tldr);
+  }
+}
+
+// Feature 5: Embedded Mermaid Diagrams & Auto-Synthesized Visual Research Taxonomy Map
+function sanitizeMermaidLabel(s) {
+  return String(s || "")
+    .replace(/["'`<>[\]{}()]/g, " ")
+    .replace(/🔍.*$/, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 26);
+}
+
+async function renderMermaidNodes(box) {
+  if (!window.mermaid) return;
+  const targets = [...box.querySelectorAll(".mermaid-render-target")];
+  for (let i = 0; i < targets.length; i++) {
+    const el = targets[i];
+    const code = el.dataset.code;
+    if (!code) continue;
+    try {
+      const id = "mmd-svg-" + Date.now() + "-" + i;
+      const { svg } = await window.mermaid.render(id, code);
+      el.innerHTML = svg;
+    } catch (err) {
+      el.innerHTML = `<pre style="text-align:left;font-size:12px;color:var(--muted);padding:8px;margin:0">${esc(code)}</pre>`;
+    }
+  }
+}
+
+function setupMermaidAndTaxonomyMap(box) {
+  // 5a) Convert native ```mermaid code blocks into interactive .mermaid-card
+  box.querySelectorAll("pre > code.language-mermaid").forEach(codeEl => {
+    const pre = codeEl.parentElement;
+    const rawCode = codeEl.textContent.trim();
+    const card = document.createElement("div");
+    card.className = "mermaid-card";
+    card.innerHTML = `
+      <div class="mermaid-head">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="pill ok">🧭 技术架构与演进图谱</span>
+          <span style="font-size:12px;color:var(--muted)">Mermaid 交互式矢量图</span>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button type="button" class="ghost small mmd-zoom-btn">🔍 放大视图</button>
+          <button type="button" class="ghost small mmd-copy-btn">⎘ 复制源码</button>
+        </div>
+      </div>
+      <div class="mermaid-stage mermaid-render-target"></div>
+    `;
+    const stage = card.querySelector(".mermaid-stage");
+    stage.dataset.code = rawCode;
+    card.querySelector(".mmd-zoom-btn").onclick = e => {
+      const z = stage.classList.toggle("zoomed");
+      e.currentTarget.textContent = z ? "🔎 还原比例" : "🔍 放大视图";
+    };
+    card.querySelector(".mmd-copy-btn").onclick = async e => {
+      const btn = e.currentTarget;
+      await navigator.clipboard.writeText(rawCode);
+      btn.textContent = "✓ 已复制";
+      setTimeout(() => { btn.textContent = "⎘ 复制源码"; }, 1400);
+    };
+    pre.replaceWith(card);
+  });
+
+  // 5b) Always provide a synthesized Interactive Research Taxonomy & Knowledge Map Card after Hero if no native diagram exists in Hero
+  const hero = box.querySelector(".report-hero");
+  const chapters = [...box.querySelectorAll(".chapter-card")].filter(c => {
+    const t = c.querySelector("h2")?.textContent || "";
+    return !/参考文献|事实核验说明/.test(t);
+  });
+  if (hero && chapters.length >= 2) {
+    const h1Txt = sanitizeMermaidLabel(hero.querySelector("h1")?.textContent || "核心课题全景");
+    const lines = ["flowchart LR", `  ROOT["✦ ${h1Txt}"]`];
+    const navPills = [];
+
+    chapters.slice(0, 6).forEach((ch, ci) => {
+      const h2El = ch.querySelector("h2");
+      const rawH2 = (h2El?.textContent || "").replace(/^\d+\s*/, "").trim();
+      const chLabel = sanitizeMermaidLabel(rawH2);
+      const cid = `C${ci + 1}`;
+      lines.push(`  ROOT --> ${cid}["${String(ci + 1).padStart(2, "0")} ${chLabel}"]`);
+      navPills.push({ label: `${String(ci + 1).padStart(2, "0")} ${rawH2.slice(0, 18)}`, target: h2El, card: ch });
+
+      const h3s = [...ch.querySelectorAll("h3")].slice(0, 3);
+      h3s.forEach((h3, si) => {
+        const sLabel = sanitizeMermaidLabel(h3.textContent.replace(/^\d+(\.\d+)*\s*/, ""));
+        if (sLabel) {
+          const sid = `${cid}_S${si + 1}`;
+          lines.push(`  ${cid} --> ${sid}["${sLabel}"]`);
+        }
+      });
+    });
+
+    const mmdCode = lines.join("\n");
+    const taxCard = document.createElement("div");
+    taxCard.className = "tax-map-card";
+    taxCard.innerHTML = `
+      <div class="mermaid-head">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="pill ok">🗺️ 课题知识图谱与章节脉络</span>
+          <span style="font-size:12px;color:var(--muted)">自动提炼核心研究脉络 · 点击下方节点可直达对应章节</span>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button type="button" class="ghost small tax-zoom-btn">🔍 放大图谱</button>
+          <button type="button" class="ghost small tax-fold-btn">收起图谱 ▴</button>
+        </div>
+      </div>
+      <div class="tax-body">
+        <div class="mermaid-stage mermaid-render-target"></div>
+        <div class="tax-pills-nav"></div>
+      </div>
+    `;
+    const stage = taxCard.querySelector(".mermaid-stage");
+    stage.dataset.code = mmdCode;
+    const navBox = taxCard.querySelector(".tax-pills-nav");
+    for (const item of navPills) {
+      const p = document.createElement("button");
+      p.type = "button";
+      p.className = "tax-node-pill";
+      p.innerHTML = `<span>🧭</span><span>${esc(item.label)}</span>`;
+      p.onclick = () => {
+        expandCard(item.card);
+        item.target?.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+      navBox.appendChild(p);
+    }
+    taxCard.querySelector(".tax-zoom-btn").onclick = e => {
+      const z = stage.classList.toggle("zoomed");
+      e.currentTarget.textContent = z ? "🔎 还原比例" : "🔍 放大图谱";
+    };
+    taxCard.querySelector(".tax-fold-btn").onclick = e => {
+      const hidden = taxCard.querySelector(".tax-body").classList.toggle("hidden");
+      e.currentTarget.textContent = hidden ? "展开图谱 ▾" : "收起图谱 ▴";
+    };
+    hero.after(taxCard);
+  }
+
+  initMermaidTheme(document.documentElement.dataset.theme || "light");
+  renderMermaidNodes(box);
+}
+
+function modularizeReportDom(box) {
+  // 1) Enhance all Markdown tables with Interactive Toolbar, Sort, Filter & Card View Switcher (Feature 4)
+  enhanceTables(box);
+
+  // 2) Turn Executive Summary / Abstract list into a Bento Grid of Takeaway Cards
+  const sumH2 = [...box.querySelectorAll("h2")].find(x => /摘要|核心结论|Executive Summary/i.test(x.textContent));
+  if (sumH2 && sumH2.nextElementSibling && ["UL", "OL"].includes(sumH2.nextElementSibling.tagName)) {
+    const list = sumH2.nextElementSibling;
+    list.classList.add("takeaways-bento");
+    [...list.children].forEach((li, idx) => {
+      li.className = "takeaway-item";
+      li.innerHTML = `<div><span class="takeaway-num">0${idx + 1}</span></div><div>${li.innerHTML}</div>`;
+    });
+  }
+
+  // 3) Partition top-level nodes into Hero Card + Modular Chapter Cards per H2
+  const children = [...box.childNodes];
+  if (!children.some(n => n.nodeType === 1 && n.tagName === "H2")) return;
+
+  const frag = document.createDocumentFragment();
+  const hero = document.createElement("div"); hero.className = "report-hero";
+  let currentBody = null, chIdx = 0;
+  const chapterMetaList = [];
+
+  for (const node of children) {
+    if (node.nodeType === 1 && node.tagName === "H2") {
+      chIdx++;
+      const rawTitle = node.textContent.trim();
+      const card = document.createElement("section");
+      card.className = "chapter-card";
+      const head = document.createElement("div");
+      head.className = "chapter-head";
+      const numStr = String(chIdx).padStart(2, "0");
+      node.innerHTML = `<span class="ch-num">${numStr}</span><span>${node.innerHTML}</span>`;
+
+      const headRight = document.createElement("div");
+      headRight.className = "ch-head-right";
+      const toggle = document.createElement("span");
+      toggle.className = "ch-toggle"; toggle.textContent = "收起 ▴";
+      headRight.appendChild(toggle);
+
+      head.append(node, headRight);
+      const body = document.createElement("div");
+      body.className = "chapter-body";
+      head.onclick = () => {
+        const c = card.classList.toggle("collapsed");
+        toggle.textContent = c ? "展开 ▾" : "收起 ▴";
+        syncFoldAllBtn();
+      };
+      card.append(head, body);
+      frag.appendChild(card);
+      currentBody = body;
+      chapterMetaList.push({ card, body, headRight, rawTitle });
+    } else if (currentBody) {
+      currentBody.appendChild(node);
+    } else {
+      hero.appendChild(node);
+    }
+  }
+
+  // 4) Apply Feature 1 (Chapter TL;DR & Source Ecosystem Bar) and Feature 2 (Feature Grid & H3 Multi-Column Cards)
+  for (const cm of chapterMetaList) {
+    enhanceChapterHeaderAndTldr(cm.card, cm.body, cm.headRight, cm.rawTitle);
+    enhanceListsAndSubsections(cm.body, cm.headRight, cm.rawTitle);
+  }
+
+  if (hero.childNodes.length) {
+    const meta = document.createElement("div");
+    meta.className = "report-hero-meta";
+    const wordCnt = currentMd.length;
+    const readMin = Math.max(2, Math.round(wordCnt / 650));
+    meta.innerHTML = `
+      <span class="pill ok">✦ Deep Research 深度报告</span>
+      <span>⏱ 预计阅读 ${readMin} 分钟（约 ${wordCnt.toLocaleString()} 字）</span>
+      <span>📚 引用 ${Object.keys(refs).length} 篇文献与来源</span>
+      <span style="color:var(--pri)">💡 悬停段落可筛选本段引文 · 点击 [n] 或 ⚠️ 批注胶囊可在右侧抽屉深度检视</span>
+    `;
+    hero.appendChild(meta);
+    frag.prepend(hero);
+  }
+  box.innerHTML = "";
+  box.appendChild(frag);
+
+  // 5) Render Embedded Mermaid & Synthesized Visual Research Taxonomy Map (Feature 5)
+  setupMermaidAndTaxonomyMap(box);
+}
+
+// Feature 3 & Feature 7: Inline Citations, Quantitative Metric Badges & Interactive Fact-Check Verdict Pills
+function decorateCitations(box) {
+  const h = [...box.querySelectorAll("h2")].find(x => /参考文献/.test(x.textContent));
+  if (h) {
+    let n = h.nextElementSibling;
+    while (n) { const nx = n.nextElementSibling; n.remove(); n = nx; }
+    const ol = document.createElement("ol"); ol.className = "refs";
+    for (const [k, v] of Object.entries(refs)) {
+      const li = document.createElement("li"); li.id = "ref-" + k;
+      li.innerHTML = `<span class="cite-pill" style="cursor:default">[${k}]</span> ` + linkify(v);
+      ol.appendChild(li);
+    }
+    h.after(ol);
+  }
+
+  // Pass 1: Turn [n] in text into interactive .cite-pill badges
+  const walker = document.createTreeWalker(box, NodeFilter.SHOW_TEXT, {
+    acceptNode: t => t.parentElement.closest("a,code,pre,ol.refs,h1,h2,h3,script,style") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+  });
+  const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+  const reCite = /\[(\d+(?:\s*[,，]\s*\d+)*)\]/g;
+  for (const node of nodes) {
+    if (!reCite.test(node.nodeValue)) continue;
+    reCite.lastIndex = 0;
+    const span = document.createElement("span");
+    span.innerHTML = esc(node.nodeValue).replace(reCite, (_, g) =>
+      g.split(/\s*[,，]\s*/).map(n => `<span class="cite-pill cite" data-n="${n}">[${n}]</span>`).join(""));
+    node.replaceWith(...span.childNodes);
+  }
+
+  // Pass 2 (Feature 7): Replace inline ⚠️ / 🔶 fact-check markers with interactive .verdict-pill badges
+  const issues = collectVerifyIssues();
+  let issueCursor = 0;
+  const vWalker = document.createTreeWalker(box, NodeFilter.SHOW_TEXT, {
+    acceptNode: t => t.parentElement.closest("a,code,pre,ol.refs,h1,h2,h3,.cite-pill,script,style") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+  });
+  const vNodes = []; while (vWalker.nextNode()) vNodes.push(vWalker.currentNode);
+  const reVerdict = /(⚠️|🔶)/g;
+  for (const node of vNodes) {
+    if (!reVerdict.test(node.nodeValue)) continue;
+    reVerdict.lastIndex = 0;
+    const parentTxt = (node.parentElement?.textContent || "").trim();
+    const span = document.createElement("span");
+    span.innerHTML = esc(node.nodeValue).replace(reVerdict, sym => {
+      const isBad = sym === "⚠️";
+      // Match issue by substring overlap or fallback to sequential cursor
+      let matched = issues.find(it => it.claim && parentTxt.includes(it.claim.slice(0, 18)));
+      if (!matched && issues.length) matched = issues[Math.min(issueCursor++, issues.length - 1)];
+      const claimTxt = matched ? matched.claim : parentTxt.slice(0, 90);
+      const reasonTxt = matched ? matched.reason : (isBad ? "核查员在抓取到的来源摘要/正文中未找到该细节的直接依据" : "陈述措辞比原始文献更绝对，或仅部分细节得到来源支持");
+      const cls = isBad ? "bad" : "warn";
+      const label = isBad ? "⚠️ 存疑 · 核查批注" : "🔶 偏强 · 核查批注";
+      return `<span class="verdict-pill ${cls}" data-verdict="${isBad ? "unsupported" : "partial"}" data-claim="${esc(claimTxt)}" data-reason="${esc(reasonTxt)}">${label}</span>`;
+    });
+    node.replaceWith(...span.childNodes);
+  }
+
+  // Pass 3 (Feature 3): Highlight quantitative metrics (speedups, percentages, parameter scales) as semantic .metric-chip pills
+  const mWalker = document.createTreeWalker(box, NodeFilter.SHOW_TEXT, {
+    acceptNode: t => t.parentElement.closest("a,code,pre,ol.refs,h1,h2,h3,th,.cite-pill,.verdict-pill,script,style") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+  });
+  const mNodes = []; while (mWalker.nextNode()) mNodes.push(mWalker.currentNode);
+  const reMetric = /((?:提升|加速|提高|增长|达)\s*\d+(?:\.\d+)?%|\+\d+(?:\.\d+)?%|\b\d+(?:\.\d+)?(?:\s*[-~～]\s*\d+(?:\.\d+)?)?\s*(?:x|×|倍)(?!\w))|((?:降低|减少|压缩|下降|节省|缩减)\s*\d+(?:\.\d+)?%|-\d+(?:\.\d+)?%)|(\b\d+(?:\.\d+)?\s*(?:B|T|GB|TB|ms|tokens\/s|tok\/s|%)(?!\w))/g;
+  for (const node of mNodes) {
+    if (!reMetric.test(node.nodeValue)) continue;
+    reMetric.lastIndex = 0;
+    const span = document.createElement("span");
+    span.innerHTML = esc(node.nodeValue).replace(reMetric, (full, gGain, gCost, gScale) => {
+      const cls = gGain ? "gain" : (gCost ? "cost" : "scale");
+      return `<span class="metric-chip ${cls}">${full}</span>`;
+    });
+    node.replaceWith(...span.childNodes);
+  }
+
+  modularizeReportDom(box);
+}
+
+function syncFoldAllBtn() {
+  const cards = [...document.querySelectorAll("#report .chapter-card")];
+  if (!cards.length) return;
+  const allCollapsed = cards.every(c => c.classList.contains("collapsed"));
+  chaptersCollapsed = allCollapsed;
+  $("fold-all").textContent = allCollapsed ? "⊞ 展开章节" : "⊟ 折叠章节";
+}
+
+function expandCard(card) {
+  if (!card || !card.classList.contains("collapsed")) return;
+  card.classList.remove("collapsed");
+  const t = card.querySelector(".ch-toggle");
+  if (t) t.textContent = "收起 ▴";
+  syncFoldAllBtn();
+}
+
+function buildToc(box) {
+  const toc = $("toc");
+  const headings = [...box.querySelectorAll("h1,h2,h3")];
+  toc.innerHTML = `
+    <div class="toc-head-row">
+      <b>📑 章节导航</b>
+      <span class="toc-prog-pill" id="toc-prog-pill">1 / ${Math.max(1, headings.length)}</span>
+    </div>
+    <div class="toc-prog-track"><div class="toc-prog-fill" id="toc-prog-fill"></div></div>
+  `;
+  headings.forEach((h, i) => {
+    h.id = "h-" + i;
+    const a = document.createElement("a");
+    a.dataset.hid = h.id;
+    const cleanTxt = h.textContent
+      .replace(/^\d+\s*/, "")
+      .replace(/🔍\s*本块引文.*$/, "")
+      .replace(/⎘\s*复制.*$/, "")
+      .trim();
+    a.className = h.tagName === "H3" ? "l3" : "";
+    a.innerHTML = `<span class="toc-dot"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(cleanTxt)}</span>`;
+    a.title = cleanTxt;
+    a.onclick = () => {
+      expandCard(h.closest(".chapter-card"));
+      h.scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(updateTocScrollSpy, 280);
+    };
+    toc.appendChild(a);
+  });
+  toc.classList.toggle("hidden", headings.length < 2);
+  setTimeout(updateTocScrollSpy, 60);
+}
+
+function updateTocScrollSpy() {
+  const toc = $("toc");
+  if (!toc || toc.classList.contains("hidden")) return;
+  const links = [...toc.querySelectorAll("a[data-hid]")];
+  if (!links.length) return;
+
+  const threshold = Math.max(110, Math.round(innerHeight * 0.26));
+  let activeIdx = 0;
+
+  for (let i = 0; i < links.length; i++) {
+    const h = document.getElementById(links[i].dataset.hid);
+    if (!h) continue;
+    // If inside a collapsed chapter-card, use the chapter-card's top position
+    const targetEl = h.offsetParent === null ? (h.closest(".chapter-card") || h) : h;
+    const rect = targetEl.getBoundingClientRect();
+    if (rect.top <= threshold) {
+      activeIdx = i;
+    }
+  }
+
+  // If scrolled to the very bottom of the page, mark the last section active
+  if (innerHeight + scrollY >= document.documentElement.scrollHeight - 40) {
+    activeIdx = links.length - 1;
+  }
+
+  links.forEach((a, idx) => {
+    a.classList.toggle("active", idx === activeIdx);
+    a.classList.toggle("read", idx < activeIdx);
+  });
+
+  const pill = $("toc-prog-pill");
+  const fill = $("toc-prog-fill");
+  const pct = Math.round(((activeIdx + 1) / links.length) * 100);
+  if (pill) pill.textContent = `已读 ${activeIdx + 1} / ${links.length}`;
+  if (fill) fill.style.width = pct + "%";
+
+  const activeLink = links[activeIdx];
+  if (activeLink) {
+    const tocRect = toc.getBoundingClientRect();
+    const linkRect = activeLink.getBoundingClientRect();
+    if (linkRect.top < tocRect.top + 36 || linkRect.bottom > tocRect.bottom - 20) {
+      activeLink.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }
+}
+
+$("fold-all").onclick = () => {
+  const cards = [...document.querySelectorAll("#report .chapter-card")];
+  const targetCollapse = !cards.every(c => c.classList.contains("collapsed"));
+  chaptersCollapsed = targetCollapse;
+  cards.forEach(c => {
+    c.classList.toggle("collapsed", targetCollapse);
+    const t = c.querySelector(".ch-toggle");
+    if (t) t.textContent = targetCollapse ? "展开 ▾" : "收起 ▴";
+  });
+  $("fold-all").textContent = targetCollapse ? "⊞ 展开章节" : "⊟ 折叠章节";
+};
+$("toggle-side").onclick = () => document.body.classList.toggle("side-collapsed");
+
+// ---------------- KPI Strip & Secondary Panes ----------------
+function updateKpis() {
+  const refList = (stateData.references && stateData.references.length)
+    ? stateData.references
+    : Object.entries(refs).map(([k, v]) => ({
+        key: k, title: v,
+        source_type: /arxiv\.org|doi\.org|被引/.test(v) ? "paper" : "web",
+        origin: /arxiv\.org/.test(v) ? "arxiv" : (/github\.com/.test(v) ? "github" : "web"),
+      }));
+  const totalSrc = refList.length;
+  const papers = refList.filter(s => s.source_type === "paper").length;
+  const webs = totalSrc - papers;
+  $("kpi-src-total").textContent = totalSrc;
+  $("kpi-src-breakdown").textContent = `${papers} 论文 · ${webs} 网页/开源`;
+  $("cnt-sources").textContent = totalSrc;
+
+  const pPct = totalSrc ? Math.round((papers / totalSrc) * 100) : 50;
+  $("kpi-dist-bar").innerHTML = `
+    <div class="dist-seg" style="width:${pPct}%;background:var(--pri)" title="学术论文 ${papers}"></div>
+    <div class="dist-seg" style="width:${100 - pPct}%;background:var(--accent)" title="网页与开源 ${webs}"></div>
+  `;
+  $("ring-src").innerHTML = svgRing(pPct, "var(--pri)");
+
+  const ftFromRefs = refList.filter(s => s.has_fulltext || s.fulltext).length;
+  const ftFromFindings = (stateData.findings || []).reduce((acc, f) => acc + (f.sources || []).filter(s => s.has_fulltext || s.fulltext).length, 0);
+  const ftTotal = Math.max(ftFromRefs, ftFromFindings);
+  const ftPct = totalSrc ? Math.min(100, Math.round((ftTotal / Math.max(1, totalSrc)) * 100)) : 0;
+  $("kpi-ft-total").textContent = ftTotal;
+  $("kpi-ft-sub").textContent = `篇精读 (${ftPct}%)`;
+  $("ring-ft").innerHTML = svgRing(ftPct, "var(--accent)");
+
+  const sqTotal = Math.max((stateData.plan || []).length, (stateData.findings || []).length);
+  $("kpi-sq-total").textContent = sqTotal;
+  $("cnt-findings").textContent = (stateData.findings || []).filter(f => f.summary).length;
+
+  const v = stateData.verification || {};
+  $("cnt-verify").textContent = v.checked || 0;
+  if (v && v.checked) {
+    const rate = Math.round(((v.supported + 0.5 * (v.partial || 0)) / v.checked) * 100);
+    $("kpi-ver-rate").textContent = rate + "%";
+    $("kpi-ver-sub").textContent = `✅${v.supported} · 🔶${v.partial} · ⚠️${v.unsupported}`;
+    $("kpi-ver-pill").innerHTML = v.revised ? '<span class="pill ok">已修订</span>' : '<span class="pill">已核验</span>';
+    const sP = (v.supported / v.checked) * 100, pP = (v.partial / v.checked) * 100, uP = (v.unsupported / v.checked) * 100;
+    $("kpi-ver-bar").innerHTML = `
+      <div class="dist-seg" style="width:${sP}%;background:var(--ok)"></div>
+      <div class="dist-seg" style="width:${pP}%;background:var(--warn)"></div>
+      <div class="dist-seg" style="width:${uP}%;background:var(--err)"></div>
+    `;
+    $("ring-ver").innerHTML = svgRing(rate, rate >= 75 ? "var(--ok)" : "var(--warn)");
+  } else {
+    $("kpi-ver-rate").textContent = "—";
+    $("kpi-ver-sub").textContent = "未启用或无核验数据";
+    $("kpi-ver-pill").innerHTML = "";
+    $("kpi-ver-bar").innerHTML = "";
+    $("ring-ver").innerHTML = svgRing(0, "var(--muted)");
+  }
+}
+
+function renderFindingsPane() {
+  const box = $("findings-list");
+  const list = (stateData.findings || []).filter(f => f.summary);
+  if (!list.length) {
+    box.innerHTML = `<div class="stage-card" style="color:var(--muted);text-align:center">当前报告无分项研究笔记存档。</div>`;
+    return;
+  }
+  box.innerHTML = "";
+  for (const f of list) {
+    const card = document.createElement("div");
+    card.className = "finding-card";
+    const srcPills = (f.sources || []).map((s, i) =>
+      `<a class="src-chip ${esc(s.origin || s.source_type || "")}" href="${esc(s.url || "#")}" target="_blank" rel="noopener" style="text-decoration:none">[${i + 1}] ${esc((s.title || "").slice(0, 44))}${s.has_fulltext ? " 📖" : ""}</a>`
+    ).join(" ");
+    card.innerHTML = `
+      <div class="finding-head">
+        <div>
+          <span class="sq-id">${esc(f.sub_question_id)}</span>
+          <b style="font-size:16px;margin-left:8px">${esc(f.question)}</b>
+        </div>
+        <span class="pill ok">${(f.sources || []).length} 篇支撑来源</span>
+      </div>
+      <div class="finding-body">${DOMPurify.sanitize(marked.parse(f.summary || ""))}</div>
+      ${srcPills ? `<div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--bd);display:flex;flex-wrap:wrap;gap:6px">${srcPills}</div>` : ""}
+    `;
+    box.appendChild(card);
+  }
+}
+
+// Item 3: Citation Timeline & Impact Scatter Analytics in Sources Pane
+function extractYearFromSource(s) {
+  const pub = String(s.published || "");
+  const m1 = pub.match(/\b(20\d{2}|19\d{2})\b/);
+  if (m1) return m1[1];
+  const m2 = String(s.title || "").match(/\b(20\d{2})\b/);
+  if (m2) return m2[1];
+  return "近期";
+}
+
+function renderSourcesAnalytics(allList) {
+  const box = $("src-analytics-box");
+  if (!allList || !allList.length) {
+    box.classList.add("hidden");
+    return;
+  }
+  box.classList.remove("hidden");
+
+  // 1) Publication Year Bar Chart
+  const yearMap = {};
+  for (const s of allList) {
+    const y = extractYearFromSource(s);
+    yearMap[y] = (yearMap[y] || 0) + 1;
+  }
+  const years = Object.keys(yearMap).sort();
+  const maxCnt = Math.max(1, ...Object.values(yearMap));
+  const tlBox = $("chart-timeline");
+  tlBox.innerHTML = `
+    <div style="display:flex;align-items:flex-end;gap:10px;height:132px;padding:12px 6px 4px">
+      ${years.map(y => {
+        const cnt = yearMap[y];
+        const hPct = Math.max(12, Math.round((cnt / maxCnt) * 92));
+        const active = srcYearFilter === y;
+        return `
+          <div data-year="${esc(y)}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer" title="点击筛选 ${esc(y)} 年文献（${cnt} 篇）">
+            <span style="font-size:11px;font-weight:700;color:${active ? "var(--pri)" : "var(--muted)"}">${cnt}</span>
+            <div style="width:100%;max-width:42px;height:${hPct}px;border-radius:7px 7px 3px 3px;background:${active ? "var(--grad-brand)" : "var(--pri-soft)"};border:1px solid ${active ? "var(--pri)" : "var(--pri-border)"};transition:all .2s"></div>
+            <span style="font-size:11.5px;font-weight:${active ? "800" : "600"};color:${active ? "var(--pri)" : "var(--fg-2)"}">${esc(y)}</span>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+  tlBox.querySelectorAll("[data-year]").forEach(el => {
+    el.onclick = () => {
+      const y = el.dataset.year;
+      srcYearFilter = srcYearFilter === y ? "" : y;
+      $("clear-year-btn").style.display = srcYearFilter ? "inline-flex" : "none";
+      $("year-filter-hint").textContent = srcYearFilter ? `当前筛选: ${srcYearFilter} 年` : "点击柱条可按年份过滤";
+      renderSourcesPane();
+    };
+  });
+
+  // 2) Citation Impact vs Relevance Scatter / Bubble Matrix (SVG)
+  const scBox = $("chart-scatter");
+  const W = 460, H = 132, padX = 36, padY = 18;
+  const numYears = years.filter(y => /^\d{4}$/.test(y)).map(Number);
+  const minY = numYears.length ? Math.min(...numYears) : 2022;
+  const maxY = numYears.length ? Math.max(...numYears, minY + 1) : 2026;
+  const maxCiteLog = Math.max(1.5, ...allList.map(s => Math.log10(1 + (s.citation_count || 0))));
+
+  const colorByOrigin = orig => {
+    const o = String(orig || "").toLowerCase();
+    if (o.includes("arxiv")) return "#ef4444";
+    if (o.includes("semantic") || o.includes("openalex")) return "#3b82f6";
+    if (o.includes("github")) return "#10b981";
+    if (o.includes("local")) return "#8b5cf6";
+    return "#0ea5e9";
+  };
+
+  const circles = allList.map((s, i) => {
+    const yStr = extractYearFromSource(s);
+    const yNum = /^\d{4}$/.test(yStr) ? Number(yStr) : maxY;
+    const xRatio = maxY > minY ? (yNum - minY) / (maxY - minY) : 0.5;
+    // Slight deterministic jitter so same-year papers don't overlap completely
+    const jitterX = ((i % 5) - 2) * 5;
+    const cx = Math.round(padX + xRatio * (W - padX * 2) + jitterX);
+    const citeLog = Math.log10(1 + (s.citation_count || 0));
+    const relRatio = s.citation_count ? (citeLog / maxCiteLog) : ((s.relevance || (5 + (i % 5))) / 10);
+    const cy = Math.round(H - padY - Math.max(0.08, Math.min(0.95, relRatio)) * (H - padY * 2));
+    const r = Math.min(11, Math.max(5.5, 5 + citeLog * 2.5));
+    const col = colorByOrigin(s.origin || s.source_type);
+    const tipTxt = `[${s.idx}] ${(s.title || "").slice(0, 50)} (${yStr}${s.citation_count ? ` · 被引 ${s.citation_count}` : ""})`;
+    return `<circle class="sc-dot" data-idx="${s.idx}" cx="${cx}" cy="${cy}" r="${r.toFixed(1)}" fill="${col}" fill-opacity="0.78" stroke="#fff" stroke-width="1.5" style="cursor:pointer"><title>${esc(tipTxt)}</title></circle>`;
+  }).join("");
+
+  scBox.innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:132px;overflow:visible">
+      <line x1="${padX}" y1="${H - padY}" x2="${W - padX}" y2="${H - padY}" stroke="var(--bd)" stroke-width="1"/>
+      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${H - padY}" stroke="var(--bd)" stroke-width="1"/>
+      <text x="${padX}" y="${H - 3}" font-size="10" fill="var(--muted)">${minY}</text>
+      <text x="${W - padX - 24}" y="${H - 3}" font-size="10" fill="var(--muted)">${maxY}</text>
+      <text x="4" y="${padY + 6}" font-size="9.5" fill="var(--muted)">高引</text>
+      <text x="4" y="${H - padY}" font-size="9.5" fill="var(--muted)">基础</text>
+      ${circles}
+    </svg>
+  `;
+  scBox.querySelectorAll(".sc-dot").forEach(dot => {
+    dot.onclick = () => openSourceDrawer(Number(dot.dataset.idx));
+  });
+}
+
+$("clear-year-btn").onclick = () => {
+  srcYearFilter = "";
+  $("clear-year-btn").style.display = "none";
+  $("year-filter-hint").textContent = "点击柱条可按年份过滤";
+  renderSourcesPane();
+};
+
+function renderSourcesPane() {
+  const grid = $("sources-grid");
+  const q = ($("src-search").value || "").trim().toLowerCase();
+  const allList = (stateData.references && stateData.references.length)
+    ? stateData.references.map((s, i) => ({ ...s, idx: i + 1 }))
+    : Object.entries(refs).map(([k, v]) => ({
+        idx: Number(k), title: v, url: (v.match(/https?:\/\/\S+/) || [""])[0],
+        source_type: /arxiv\.org|doi\.org|被引/.test(v) ? "paper" : "web",
+        origin: /arxiv\.org/.test(v) ? "arxiv" : (/github\.com/.test(v) ? "github" : "web"),
+        published: (v.match(/\b(20\d{2}|19\d{2})\b/) || [""])[0],
+        snippet: "",
+      }));
+
+  renderSourcesAnalytics(allList);
+
+  const list = allList.filter(s => {
+    if (srcFilter === "paper" && s.source_type !== "paper") return false;
+    if (srcFilter === "web" && s.source_type === "paper") return false;
+    if (srcFilter === "fulltext" && !(s.has_fulltext || s.fulltext)) return false;
+    if (srcYearFilter && extractYearFromSource(s) !== srcYearFilter) return false;
+    if (q) {
+      const hay = `${s.title || ""} ${(s.authors || []).join(" ")} ${s.venue || ""} ${s.snippet || ""}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="stage-card" style="grid-column:1/-1;text-align:center;color:var(--muted)">没有匹配的来源条目</div>`;
+    return;
+  }
+  grid.innerHTML = "";
+  for (const s of list) {
+    const card = document.createElement("div");
+    card.className = "src-card";
+    const authors = (s.authors || []).slice(0, 3).join(", ") + ((s.authors || []).length > 3 ? " et al." : "");
+    card.innerHTML = `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:8px">
+          <span class="cite-pill" style="cursor:default">[${s.idx}]</span>
+          <div style="display:flex;gap:5px;align-items:center">
+            ${s.has_fulltext || s.fulltext ? '<span class="pill ok" style="font-size:11px">📖 全文精读</span>' : ""}
+            ${s.relevance !== undefined ? `<span class="pill" style="font-size:11px">🎯 ${s.relevance}/10</span>` : ""}
+            <span class="src-chip ${esc(s.origin || s.source_type || "")}">${esc(s.origin || s.source_type || "source")}</span>
+          </div>
+        </div>
+        <a class="src-title" href="${esc(s.url || "#")}" target="_blank" rel="noopener">${esc(s.title || s.url)}</a>
+        <div class="src-meta" style="margin-top:7px">
+          ${authors ? `<span>👤 ${esc(authors)}</span>` : ""}
+          ${s.venue ? `<span>🏛 ${esc(s.venue)}</span>` : ""}
+          ${s.published ? `<span>📅 ${esc(String(s.published).slice(0, 10))}</span>` : ""}
+          ${s.citation_count ? `<span class="pill" style="font-size:11px">🔥 被引 ${s.citation_count}</span>` : ""}
+        </div>
+      </div>
+      ${s.snippet ? `<div class="src-snip">${esc(s.snippet)}</div>` : ""}
+    `;
+    grid.appendChild(card);
+  }
+}
+document.querySelectorAll("[data-sfilter]").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("[data-sfilter]").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    srcFilter = btn.dataset.sfilter;
+    renderSourcesPane();
+  };
+});
+$("src-search").addEventListener("input", renderSourcesPane);
+
+function renderVerification(v) {
+  stateData.verification = v || {};
+  const box = $("verify-box");
+  const insp = $("verify-inspector");
+  if (!v || !v.checked) {
+    box.classList.add("hidden");
+    insp.innerHTML = `<div class="stage-card" style="text-align:center;color:var(--muted)">本次调研未开启事实核验或无核验记录。</div>`;
+    return;
+  }
+  box.classList.remove("hidden");
+  $("verify-sum").innerHTML =
+    `🔎 事实核验：共 ${v.checked} 条 &nbsp;<span class="pill ok">✅ ${v.supported} 支持</span> ` +
+    `<span class="pill warn">🔶 ${v.partial} 部分</span> <span class="pill bad">⚠️ ${v.unsupported} 缺乏依据</span>` +
+    (v.revised ? ' <span class="pill ok">已自动修订</span>' : "");
+  const ul = $("verify-list"); ul.innerHTML = "";
+  for (const it of (v.issues || [])) {
+    const li = document.createElement("li");
+    li.textContent = `${it.verdict === "unsupported" ? "⚠️" : "🔶"} ${it.claim} —— ${it.reason}${it.fixed ? "（已修订）" : ""}`;
+    ul.appendChild(li);
+  }
+
+  const issues = v.issues || [];
+  insp.innerHTML = `
+    <div class="stage-card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div>
+          <b style="font-size:16px">🛡️ 事实核验诊断报告</b>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">仅依据抓取到的论文摘要与全文节选逐条核对带引用陈述，防止模型幻觉或过度引申。</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <span class="pill ok">✅ 完全支持 ${v.supported}</span>
+          <span class="pill warn">🔶 表述偏强/部分支持 ${v.partial}</span>
+          <span class="pill bad">⚠️ 缺乏依据 ${v.unsupported}</span>
+        </div>
+      </div>
+    </div>
+    ${issues.length ? issues.map(it => `
+      <div class="claim-card ${esc(it.verdict)}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span class="pill ${it.verdict === "unsupported" ? "bad" : "warn"}">${it.verdict === "unsupported" ? "⚠️ 缺乏直接依据" : "🔶 部分支持 / 措辞绝对"}</span>
+          ${it.fixed ? '<span class="pill ok">✓ 正文已自动收窄修订</span>' : '<span class="pill">已在正文旁标注提醒</span>'}
+        </div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:4px">${esc(it.claim)}</div>
+        <div style="font-size:13px;color:var(--muted)">💡 核查意见：${esc(it.reason)}</div>
+      </div>
+    `).join("") : `<div class="stage-card" style="text-align:center;color:var(--ok)">🎉 抽检的 ${v.checked} 条陈述全部得到来源明确支持！</div>`}
+  `;
+}
+
+function render(md, verification, extraMeta) {
+  if (extraMeta) {
+    if (extraMeta.research_type) stateData.research_type = extraMeta.research_type;
+    if (extraMeta.plan && extraMeta.plan.length) stateData.plan = extraMeta.plan;
+    if (extraMeta.findings && extraMeta.findings.length) stateData.findings = extraMeta.findings;
+    if (extraMeta.references && extraMeta.references.length) stateData.references = extraMeta.references;
+  }
+  if (verification !== undefined) renderVerification(verification);
+  chaptersCollapsed = false; $("fold-all").textContent = "⊟ 折叠章节";
+  currentMd = md; refs = parseRefs(md);
+  const box = $("report");
+  box.innerHTML = DOMPurify.sanitize(marked.parse(md));
+  decorateCitations(box); buildToc(box);
+  box.querySelectorAll("a").forEach(a => { a.target = "_blank"; a.rel = "noopener"; });
+  updateKpis();
+  renderFindingsPane();
+  renderSourcesPane();
+  $("edit-box").classList.add("hidden"); box.classList.remove("hidden");
+  $("result").classList.remove("hidden");
+}
+
+// Hover Citation & Fact-Check Verdict Popover + Click Slide-Over Source Inspector Drawer
+document.addEventListener("mouseover", e => {
+  const tip = $("tip");
+  const vp = e.target.closest(".verdict-pill");
+  if (vp) {
+    const isBad = vp.dataset.verdict === "unsupported";
+    tip.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span class="pill ${isBad ? "bad" : "warn"}">${isBad ? "⚠️ 缺乏直接依据" : "🔶 部分支持 / 表述偏强"}</span>
+        <span style="font-size:11px;color:var(--muted)">点击在抽屉查看详情</span>
+      </div>
+      <div style="font-weight:700;font-size:12.5px;margin-bottom:5px">${esc(vp.dataset.claim || "")}</div>
+      <div style="color:var(--fg-2);font-size:12px;border-top:1px solid var(--bd-soft);padding-top:5px">💡 <b>核查批注：</b>${esc(vp.dataset.reason || "")}</div>
+    `;
+    tip.classList.remove("hidden");
+    const r = vp.getBoundingClientRect();
+    tip.style.left = Math.max(12, Math.min(r.left, innerWidth - 450)) + "px";
+    tip.style.top = (r.bottom + 10 + tip.offsetHeight > innerHeight ? Math.max(10, r.top - tip.offsetHeight - 8) : r.bottom + 8) + "px";
+    return;
+  }
+
+  const c = e.target.closest(".cite");
+  if (!c) return tip.classList.add("hidden");
+  const n = Number(c.dataset.n);
+  const metaSrc = (stateData.references || [])[n - 1];
+  const t = refs[c.dataset.n];
+  if (!metaSrc && !t) return;
+  if (metaSrc) {
+    const authors = (metaSrc.authors || []).slice(0, 3).join(", ");
+    tip.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span class="cite-pill">[${n}]</span>
+        <span class="src-chip ${esc(metaSrc.origin || "")}">${esc(metaSrc.origin || metaSrc.source_type || "")}${metaSrc.has_fulltext ? " · 📖全文" : ""}</span>
+      </div>
+      <div style="font-weight:700;margin-bottom:4px">${esc(metaSrc.title)}</div>
+      <div style="color:var(--muted);font-size:11.5px;margin-bottom:4px">
+        ${authors ? esc(authors) + " · " : ""}${esc(metaSrc.venue || "")} ${esc((metaSrc.published || "").slice(0, 10))}
+        ${metaSrc.citation_count ? ` · 🔥 被引 ${metaSrc.citation_count}` : ""}
+      </div>
+      ${metaSrc.snippet ? `<div style="color:var(--fg-2);font-size:12px;border-top:1px solid var(--bd-soft);padding-top:4px">${esc(metaSrc.snippet.slice(0, 180))}…</div>` : ""}
+    `;
+  } else {
+    tip.innerHTML = `<span class="cite-pill">[${c.dataset.n}]</span> ` + linkify(t).replace(/<a [^>]*>(.*?)<\/a>/g, "$1");
+  }
+  tip.classList.remove("hidden");
+  const r = c.getBoundingClientRect();
+  tip.style.left = Math.max(12, Math.min(r.left, innerWidth - 450)) + "px";
+  tip.style.top = (r.bottom + 10 + tip.offsetHeight > innerHeight ? Math.max(10, r.top - tip.offsetHeight - 8) : r.bottom + 8) + "px";
+});
+
+function renderSourceCardInDrawer(n) {
+  const metaSrc = (stateData.references || [])[n - 1];
+  const rawText = refs[String(n)];
+  if (!metaSrc && !rawText) return "";
+  if (metaSrc) {
+    const authors = (metaSrc.authors || []).slice(0, 4).join(", ");
+    return `
+      <div style="background:var(--surface-2);border:1px solid var(--bd);border-radius:12px;padding:13px 15px;display:flex;flex-direction:column;gap:7px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">
+          <span class="cite-pill" style="cursor:default">[${n}]</span>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <span class="src-chip ${esc(metaSrc.origin || "")}">${esc(metaSrc.origin || metaSrc.source_type || "source")}</span>
+            ${metaSrc.has_fulltext || metaSrc.fulltext ? '<span class="pill ok" style="font-size:11px">📖 全文精读</span>' : ""}
+            ${metaSrc.citation_count ? `<span class="pill" style="font-size:11px">🔥 被引 ${metaSrc.citation_count}</span>` : ""}
+          </div>
+        </div>
+        <a href="${esc(metaSrc.url || "#")}" target="_blank" rel="noopener" style="font-weight:700;font-size:14px;color:var(--fg);text-decoration:none;line-height:1.42">${esc(metaSrc.title)}</a>
+        ${authors ? `<div style="font-size:12px;color:var(--muted)">👤 ${esc(authors)}</div>` : ""}
+        <div style="font-size:11.5px;color:var(--muted)">🏛 ${esc(metaSrc.venue || "未知出版物")} · 📅 ${esc((metaSrc.published || "").slice(0, 10))}</div>
+        ${metaSrc.snippet ? `<div style="font-size:12.5px;line-height:1.6;color:var(--fg-2);background:var(--surface-solid);padding:9px 11px;border-radius:8px;border:1px solid var(--bd-soft)">${esc(metaSrc.snippet.slice(0, 260))}${metaSrc.snippet.length > 260 ? "…" : ""}</div>` : ""}
+      </div>
+    `;
+  }
+  return `
+    <div style="background:var(--surface-2);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.6">
+      <span class="cite-pill" style="cursor:default">[${n}]</span> ${linkify(rawText)}
+    </div>
+  `;
+}
+
+function openMultiSourceDrawer(nums, title) {
+  if (!nums || !nums.length) return;
+  const drw = $("src-drawer"), body = $("drw-body");
+  $("drw-badge").textContent = `📚 ${title}（共 ${nums.length} 篇）`;
+  body.innerHTML = nums.map(n => renderSourceCardInDrawer(n)).join("");
+  drw.classList.remove("hidden");
+}
+
+function openSourceDrawer(n) {
+  const metaSrc = (stateData.references || [])[n - 1];
+  const rawText = refs[String(n)];
+  if (!metaSrc && !rawText) return;
+  const drw = $("src-drawer"), body = $("drw-body");
+  $("drw-badge").textContent = `引用文献 [${n}]`;
+  if (metaSrc) {
+    const authors = (metaSrc.authors || []).join(", ");
+    body.innerHTML = `
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span class="src-chip ${esc(metaSrc.origin || "")}">${esc(metaSrc.origin || metaSrc.source_type || "source")}</span>
+        ${metaSrc.has_fulltext || metaSrc.fulltext ? '<span class="pill ok">📖 已抓取全文</span>' : ""}
+        ${metaSrc.relevance !== undefined ? `<span class="pill">🎯 相关性 ${metaSrc.relevance}/10</span>` : ""}
+        ${metaSrc.citation_count ? `<span class="pill">🔥 被引 ${metaSrc.citation_count}</span>` : ""}
+      </div>
+      <div style="font-weight:800;font-size:16px;line-height:1.4">${esc(metaSrc.title)}</div>
+      ${authors ? `<div style="font-size:12.5px;color:var(--muted)">👤 ${esc(authors)}</div>` : ""}
+      <div style="font-size:12.5px;color:var(--muted)">🏛 ${esc(metaSrc.venue || "未知出版物")} · 📅 ${esc((metaSrc.published || "").slice(0, 10))}</div>
+      ${metaSrc.url ? `<a class="pri-btn" href="${esc(metaSrc.url)}" target="_blank" rel="noopener" style="text-decoration:none;justify-content:center;padding:8px 14px">↗ 打开原始文献 / 网页</a>` : ""}
+      ${metaSrc.snippet ? `<div style="margin-top:6px"><b style="font-size:12px;color:var(--muted)">摘要 / 核心片段</b><div style="font-size:13.5px;line-height:1.7;color:var(--fg-2);margin-top:4px;background:var(--surface-2);padding:12px;border-radius:10px;border:1px solid var(--bd)">${esc(metaSrc.snippet)}</div></div>` : ""}
+    `;
+  } else {
+    body.innerHTML = `<div style="font-size:14px;line-height:1.7">${linkify(rawText)}</div>`;
+  }
+  drw.classList.remove("hidden");
+}
+$("drw-close").onclick = () => $("src-drawer").classList.add("hidden");
+
+document.addEventListener("click", e => {
+  const vp = e.target.closest(".verdict-pill");
+  if (vp) {
+    const isBad = vp.dataset.verdict === "unsupported";
+    const drw = $("src-drawer"), body = $("drw-body");
+    $("drw-badge").textContent = "🛡️ 事实核验批注详情";
+    const parentEl = vp.parentElement;
+    const nums = parentEl ? extractCiteNums(parentEl) : [];
+    body.innerHTML = `
+      <div class="claim-card ${isBad ? "unsupported" : "partial"}" style="margin:0">
+        <div style="margin-bottom:6px">
+          <span class="pill ${isBad ? "bad" : "warn"}">${isBad ? "⚠️ 缺乏直接依据" : "🔶 部分支持 / 措辞偏强"}</span>
+        </div>
+        <div style="font-weight:700;font-size:14px;margin-bottom:8px;line-height:1.5">${esc(vp.dataset.claim || "")}</div>
+        <div style="font-size:13px;color:var(--fg-2);background:var(--surface-2);padding:10px 12px;border-radius:8px">💡 <b>核查员诊断：</b>${esc(vp.dataset.reason || "")}</div>
+      </div>
+      ${nums.length ? `<div style="font-size:12px;font-weight:700;color:var(--muted);margin-top:6px">📚 该句引用的候选来源核对（共 ${nums.length} 篇）：</div>` + nums.map(n => renderSourceCardInDrawer(n)).join("") : ""}
+      <button type="button" class="ghost small" onclick="switchPane('pane-verify');$('src-drawer').classList.add('hidden')">↗ 打开完整事实核验诊断面板</button>
+    `;
+    drw.classList.remove("hidden");
+    return;
+  }
+
+  const c = e.target.closest(".cite"); if (!c) return;
+  openSourceDrawer(Number(c.dataset.n));
+  const li = $("ref-" + c.dataset.n);
+  if (li) {
+    const refCard = li.closest(".chapter-card");
+    if (refCard && refCard.classList.contains("collapsed")) expandCard(refCard);
+    li.classList.add("flash"); setTimeout(() => li.classList.remove("flash"), 1800);
+  }
+});
+
+// ---------------- Live Run Event Stream ----------------
+function addStep(text, cls) {
+  const li = document.createElement("li");
+  if (cls) li.className = cls;
+  li.textContent = text;
+  $("steps").appendChild(li);
+  $("step-count").textContent = $("steps").children.length;
+}
+function setRunStatus(s) {
+  runStatus = s;
+  const active = ACTIVE.includes(s);
+  $("btn-cancel").classList.toggle("hidden", !active);
+  $("btn-continue").classList.toggle("hidden", !CONTINUABLE.includes(s));
+  $("btn-delete").classList.toggle("hidden", !runId || active);
+  $("start").disabled = false;
+  $("status").innerHTML = s === "running" ? '<span class="spin"></span>智能体深度调研中…' : s === "queued" ? "⏳ 队列等待中…" : s === "waiting_review" ? "👀 等待确认研究计划" : "";
+  renderSqGrid();
+}
+
+function handle(ev) {
+  if (ev.type === "draft") {
+    // Item 5: Real-time Token-by-Token Streaming Preview during write_report
+    updateStepper("write_report");
+    const dBox = $("live-draft-box"), dBody = $("live-draft-body");
+    dBox.classList.remove("hidden");
+    $("live-draft-cnt").textContent = `${(ev.text || "").length.toLocaleString()} 字`;
+    dBody.innerHTML = DOMPurify.sanitize(marked.parse(ev.text || ""));
+    dBody.scrollTop = dBody.scrollHeight;
+    return;
+  }
+  lastEventId = Math.max(lastEventId, ev.id ?? -1);
+  if (ev.type === "node") {
+    addStep(ev.text, /⚠️/.test(ev.text) ? "warn" : "");
+    $("review-box").classList.add("hidden");
+    updateStepper(ev.node);
+    const m = ev.meta || {};
+    if (ev.node === "plan") {
+      upsertPlanCards(m.plan || [], m.research_type || "");
+    } else if (ev.node === "research") {
+      if (Array.isArray(m.findings)) {
+        for (const f of m.findings) {
+          const idx = stateData.findings.findIndex(x => x.sub_question_id === f.sub_question_id);
+          if (idx >= 0) stateData.findings[idx] = f; else stateData.findings.push(f);
+        }
+        renderSqGrid();
+      } else {
+        parseLegacyNodeEvent(ev);
+      }
+    } else if (ev.node === "reflect") {
+      if (Array.isArray(m.pending_tasks) && m.pending_tasks.length) upsertPlanCards(m.pending_tasks);
+      else parseLegacyNodeEvent(ev);
+    }
+    if (!m.plan && !m.findings) parseLegacyNodeEvent(ev);
+    setRunStatus("running");
+  } else if (ev.type === "queued") {
+    addStep(ev.text); setRunStatus("queued");
+  } else if (ev.type === "interrupt") {
+    updateStepper("review_plan");
+    if (Array.isArray(ev.plan) && ev.plan.length) upsertPlanCards(ev.plan, ev.research_type || "");
+    $("plan-text").textContent = `类型：${ev.research_type}\n\n${ev.plan_text}`;
+    $("feedback").value = ""; $("review-box").classList.remove("hidden");
+    setRunStatus("waiting_review");
+  } else if (ev.type === "done") {
+    $("live-draft-box").classList.add("hidden");
+    updateStepper("verify_report", true);
+    render(ev.report, ev.verification, {
+      research_type: ev.research_type,
+      plan: ev.plan,
+      findings: ev.findings,
+      references: ev.references,
+    });
+    savedName = currentName = ev.saved_as || "report.md";
+    addStep("✅ 完成，已保存到 reports/" + currentName);
+    setRunStatus("done"); closeStream(); loadLists();
+  } else if (ev.type === "error") {
+    $("live-draft-box").classList.add("hidden");
+    addStep("❌ " + ev.message, "err"); setRunStatus("error"); closeStream(); loadLists();
+  } else if (ev.type === "cancelled") {
+    $("live-draft-box").classList.add("hidden");
+    addStep("⏹️ " + ev.message, "warn"); $("review-box").classList.add("hidden"); setRunStatus("cancelled"); closeStream(); loadLists();
+  }
+}
+
+function closeStream() { if (es) { es.close(); es = null; } }
+function listen(id) {
+  closeStream();
+  es = new EventSource(`/api/runs/${id}/events?last_event_id=${lastEventId}`);
+  es.onmessage = e => handle(JSON.parse(e.data));
+  es.onerror = () => {
+    closeStream();
+    if (ACTIVE.includes(runStatus) && runId === id) setTimeout(() => runId === id && !es && listen(id), 1500);
+  };
+}
+function resetView() {
+  closeStream();
+  $("steps").innerHTML = ""; $("step-count").textContent = "0";
+  $("sq-grid").innerHTML = "";
+  $("live-draft-box").classList.add("hidden");
+  $("run-type-badge").classList.add("hidden");
+  $("result").classList.add("hidden");
+  $("review-box").classList.add("hidden");
+  $("verify-box").classList.add("hidden");
+  $("src-drawer").classList.add("hidden");
+  updateStepper("");
+  stateData = { research_type: "", plan: [], findings: [], references: [], verification: {} };
+  srcYearFilter = "";
+  chapterUndoMap = {};
+  reportUndoStack = [];
+  syncUndoBtn();
+  lastEventId = -1; savedName = null;
+  switchPane("pane-report");
+}
+
+// Item 6: Local PDF / Markdown / TXT Hybrid Upload
+function renderLocalDocChips() {
+  const row = $("local-docs-row");
+  if (!uploadedLocalDocs.length) {
+    row.classList.add("hidden");
+    row.innerHTML = "";
+    return;
+  }
+  row.classList.remove("hidden");
+  row.innerHTML = `<span style="font-size:12px;color:var(--muted);font-weight:600;align-self:center">📎 已挂载本地参考资料：</span>` +
+    uploadedLocalDocs.map((d, i) => `
+      <span class="local-doc-chip">
+        <span>📄 ${esc(d.title.replace(/^\[本地文档\]\s*/, ""))} (${Math.round((d.fulltext || "").length / 100) / 10}k字)</span>
+        <button type="button" data-rm="${i}" title="移除该文档">✕</button>
+      </span>
+    `).join("");
+  row.querySelectorAll("[data-rm]").forEach(btn => {
+    btn.onclick = () => {
+      uploadedLocalDocs.splice(Number(btn.dataset.rm), 1);
+      renderLocalDocChips();
+    };
+  });
+}
+
+$("btn-upload-doc").onclick = () => $("doc-upload-input").click();
+$("doc-upload-input").onchange = async e => {
+  const files = [...(e.target.files || [])];
+  if (!files.length) return;
+  const btn = $("btn-upload-doc");
+  const orig = btn.textContent;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spin"></span>解析中…`;
+  for (const file of files) {
+    try {
+      const b64 = await new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.onload = () => res(String(reader.result).split(",")[1] || "");
+        reader.onerror = rej;
+        reader.readAsDataURL(file);
+      });
+      const r = await fetch("/api/upload-doc", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: file.name, content_base64: b64 }),
+      });
+      if (!r.ok) throw new Error(await r.text());
+      const docSrc = await r.json();
+      uploadedLocalDocs.push(docSrc);
+    } catch (err) {
+      alert(`解析文件 ${file.name} 失败：` + err.message);
+    }
+  }
+  btn.disabled = false;
+  btn.textContent = orig;
+  e.target.value = "";
+  renderLocalDocChips();
+};
+
+async function openRun(id) {
+  const r = await fetch(`/api/runs/${id}`); if (!r.ok) return;
+  const d = await r.json();
+  resetView(); runId = id;
+  $("progress").classList.remove("hidden"); $("run-title").textContent = d.topic;
+  for (const ev of d.events) handle(ev);
+  if (!d.events.length) setRunStatus(d.status);
+  else if (runStatus !== d.status && !["done", "error", "cancelled"].includes(d.status)) setRunStatus(d.status);
+  if (ACTIVE.includes(d.status)) listen(id);
+  loadLists();
+}
+
+$("start").onclick = async () => {
+  const topic = $("topic").value.trim();
+  if (topic.length < 2) return $("topic").focus();
+  const num = id => $(id).value === "" ? null : Number($(id).value);
+  const body = {
+    topic, review: $("review").checked,
+    model: $("model").value.trim() || null, writer_model: $("writer_model").value.trim() || null,
+    max_sub_questions: num("max_sub_questions"), iterations: num("iterations"),
+    language: $("language").value.trim() || null,
+    verify: $("verify").value, fulltext: $("fulltext").checked, relevance_filter: $("relevance_filter").checked,
+    local_docs: uploadedLocalDocs,
+  };
+  resetView(); $("progress").classList.remove("hidden"); $("run-title").textContent = topic;
+  updateStepper("plan");
+  addStep("🚀 开始调研：" + topic); $("start").disabled = true;
+  const r = await fetch("/api/runs", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(body) });
+  if (!r.ok) { addStep("❌ 请求失败：" + await r.text(), "err"); $("start").disabled = false; return; }
+  runId = (await r.json()).id; setRunStatus("running"); listen(runId); loadLists();
+};
+$("approve").onclick = async () => {
+  $("approve").disabled = true;
+  const r = await fetch(`/api/runs/${runId}/resume`, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({answer: $("feedback").value}) });
+  $("approve").disabled = false;
+  if (!r.ok) return addStep("❌ " + await r.text(), "err");
+  $("review-box").classList.add("hidden"); setRunStatus("running"); listen(runId);
+};
+$("btn-cancel").onclick = async () => { $("btn-cancel").disabled = true; await fetch(`/api/runs/${runId}/cancel`, { method: "POST" }); $("btn-cancel").disabled = false; };
+$("btn-continue").onclick = async () => {
+  const r = await fetch(`/api/runs/${runId}/continue`, { method: "POST" });
+  if (!r.ok) return addStep("❌ " + await r.text(), "err");
+  setRunStatus("running"); listen(runId);
+};
+$("btn-delete").onclick = async () => {
+  if (!confirm("删除该任务记录及其断点？已保存的报告不会被删除。")) return;
+  await fetch(`/api/runs/${runId}`, { method: "DELETE" });
+  runId = null; resetView(); $("progress").classList.add("hidden"); loadLists();
+};
+
+// ---------------- Report Toolbar & Exports (Item 1, 7, 8) ----------------
+$("undo-report-btn").onclick = async () => {
+  if (!reportUndoStack.length) return;
+  const prevMd = reportUndoStack.pop();
+  // Also pop any matching chapter undo history if applicable
+  for (const k of Object.keys(chapterUndoMap)) {
+    if (chapterUndoMap[k] && chapterUndoMap[k].length) {
+      chapterUndoMap[k].pop();
+      break;
+    }
+  }
+  await saveAndRenderReport(prevMd);
+};
+$("toggle-toc").onclick = () => $("toc").classList.toggle("hidden");
+$("copy").onclick = async () => { await navigator.clipboard.writeText(currentMd); $("copy").textContent = "已复制 ✓"; setTimeout(() => $("copy").textContent = "⎘ 复制", 1500); };
+$("download").onclick = () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([currentMd], {type:"text/markdown;charset=utf-8"}));
+  a.download = currentName; a.click(); URL.revokeObjectURL(a.href);
+};
+$("print").onclick = () => { switchPane("pane-report"); window.print(); };
+
+// Item 7a: Export Standard BibTeX (.bib)
+$("export-bib").onclick = () => {
+  const list = (stateData.references && stateData.references.length)
+    ? stateData.references.map((s, i) => ({ ...s, idx: i + 1 }))
+    : Object.entries(refs).map(([k, v]) => ({
+        idx: Number(k), title: v, url: (v.match(/https?:\/\/\S+/) || [""])[0],
+        source_type: /arxiv\.org|doi\.org/i.test(v) ? "paper" : "misc",
+        published: (v.match(/\b(20\d{2}|19\d{2})\b/) || ["2025"])[0],
+        authors: [],
+      }));
+  if (!list.length) return alert("当前报告暂无可导出的参考文献");
+  const entries = list.map(s => {
+    const year = extractYearFromSource(s);
+    const firstAuthor = ((s.authors && s.authors[0]) || "ref").split(/\s+/)[0].replace(/[^a-zA-Z0-9]/g, "").toLowerCase() || "source";
+    const citeKey = `${firstAuthor}${year}_${s.idx}`;
+    const isPaper = s.source_type === "paper" || /arxiv\.org/i.test(s.url || "");
+    const type = isPaper ? "article" : "misc";
+    const authorsStr = (s.authors && s.authors.length) ? s.authors.join(" and ") : "Unknown";
+    const cleanTitle = String(s.title || "").replace(/[{}]/g, "");
+    return [
+      `@${type}{${citeKey},`,
+      `  title = {{${cleanTitle}}},`,
+      `  author = {${authorsStr}},`,
+      `  year = {${/^\d{4}$/.test(year) ? year : new Date().getFullYear()}},`,
+      s.venue ? `  journal = {${s.venue}},` : `  howpublished = {\\url{${s.url || ""}}},`,
+      s.url ? `  url = {${s.url}},` : "",
+      `  note = {Citation [${s.idx}] in Deep Research Report}`,
+      `}`,
+    ].filter(Boolean).join("\n");
+  }).join("\n\n");
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([entries], { type: "application/x-bibtex;charset=utf-8" }));
+  a.download = currentName.replace(/\.md$/i, "") + ".bib";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+// Item 7b: Export Standalone Self-Contained Interactive HTML (.html)
+$("export-html").onclick = () => {
+  if (!currentMd) return;
+  const styles = [...document.querySelectorAll("style")].map(s => s.innerHTML).join("\n");
+  const reportHtml = $("report").innerHTML;
+  const kpiHtml = $("kpi-strip").outerHTML;
+  const titleTxt = $("report").querySelector("h1")?.textContent || currentName;
+  const standalone = `<!doctype html>
+<html lang="zh-CN" data-theme="${document.documentElement.dataset.theme || "light"}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(titleTxt)} · Deep Research 交互式报告</title>
+<style>${styles}
+body { padding: 28px 40px 80px; max-width: 1440px; margin: 0 auto; }
+</style>
+</head>
+<body>
+  ${kpiHtml}
+  <article class="report" id="report">${reportHtml}</article>
+  <script>
+    document.querySelectorAll(".chapter-head").forEach(h => {
+      h.onclick = () => {
+        const c = h.parentElement.classList.toggle("collapsed");
+        const t = h.querySelector(".ch-toggle");
+        if (t) t.textContent = c ? "展开 ▾" : "收起 ▴";
+      };
+    });
+    document.querySelectorAll(".tb-card-btn").forEach(btn => {
+      btn.onclick = () => {
+        const box = btn.closest(".table-box");
+        const cards = box.querySelector(".tb-cards-grid");
+        const scroll = box.querySelector(".table-scroll");
+        const chart = box.querySelector(".tb-chart-box");
+        const showCards = cards.classList.toggle("hidden") === false;
+        scroll.classList.toggle("hidden", showCards);
+        if (chart) chart.classList.add("hidden");
+        btn.textContent = showCards ? "📊 返回表格" : "🎴 名片视图";
+      };
+    });
+    document.querySelectorAll(".tb-chart-btn").forEach(btn => {
+      btn.onclick = () => {
+        const box = btn.closest(".table-box");
+        const chart = box.querySelector(".tb-chart-box");
+        const scroll = box.querySelector(".table-scroll");
+        const cards = box.querySelector(".tb-cards-grid");
+        const showChart = chart.classList.toggle("hidden") === false;
+        scroll.classList.toggle("hidden", showChart);
+        if (cards) cards.classList.add("hidden");
+        btn.textContent = showChart ? "📊 返回表格" : "📈 图表视图";
+      };
+    });
+  <\/script>
+</body>
+</html>`;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([standalone], { type: "text/html;charset=utf-8" }));
+  a.download = currentName.replace(/\.md$/i, "") + ".html";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+// Item 1 & Phase 3 Item 6: Ask This Report Copilot Chat (SSE Token-by-Token Streaming + One-Click Insert to Report)
+function decorateCopilotMsg(html) {
+  return html.replace(/\[(\d+(?:\s*[,，]\s*\d+)*)\]/g, (_, g) =>
+    g.split(/\s*[,，]\s*/).map(n => `<span class="cite-pill cite" data-n="${n}">[${n}]</span>`).join("")
+  );
+}
+
+function setCopilotQuote(txt) {
+  copilotQuotedSnippet = String(txt || "").trim();
+  const bar = $("cp-quote-bar");
+  const span = $("cp-quote-txt");
+  if (!copilotQuotedSnippet) {
+    bar.classList.add("hidden");
+    span.textContent = "";
+    return;
+  }
+  span.textContent = copilotQuotedSnippet;
+  bar.classList.remove("hidden");
+}
+$("cp-quote-clear").onclick = () => setCopilotQuote("");
+
+async function appendCopilotAnswerToReport(questionTxt, answerMd, btnEl) {
+  if (!currentMd || !answerMd) return;
+  reportUndoStack.push(currentMd);
+
+  const cleanQ = String(questionTxt || "延伸追问").replace(/^针对报告中「[\s\S]*?」这一段：\s*/, "").trim().slice(0, 65);
+  const subBlock = `### 💬 ${cleanQ}\n\n${answerMd.trim()}`;
+  const secHeader = "## 💡 伴读追问与延伸分析";
+
+  let nextMd = currentMd;
+  if (nextMd.includes(secHeader)) {
+    // Append into existing "## 💡 伴读追问与延伸分析" section before "## 事实核验说明" or "## 参考文献"
+    const tailMatch = nextMd.match(/\n(?=##\s*(?:事实核验说明|参考文献))/);
+    if (tailMatch && tailMatch.index !== undefined && tailMatch.index > nextMd.indexOf(secHeader)) {
+      const idx = tailMatch.index;
+      nextMd = nextMd.slice(0, idx).trimEnd() + "\n\n" + subBlock + "\n" + nextMd.slice(idx);
+    } else {
+      nextMd = nextMd.trimEnd() + "\n\n" + subBlock + "\n";
+    }
+  } else {
+    const newSec = `${secHeader}\n\n${subBlock}`;
+    const tailMatch = nextMd.match(/\n(?=##\s*(?:事实核验说明|参考文献))/);
+    if (tailMatch && tailMatch.index !== undefined) {
+      const idx = tailMatch.index;
+      nextMd = nextMd.slice(0, idx).trimEnd() + "\n\n" + newSec + "\n" + nextMd.slice(idx);
+    } else {
+      nextMd = nextMd.trimEnd() + "\n\n" + newSec + "\n";
+    }
+  }
+
+  await saveAndRenderReport(nextMd);
+  if (btnEl) {
+    btnEl.textContent = "✓ 已插入报告（可撤回）";
+    setTimeout(() => { btnEl.textContent = "➕ 插入报告末尾"; }, 2200);
+  }
+  const targetH2 = [...document.querySelectorAll("#report h2")].find(h => h.textContent.includes("伴读追问与延伸分析"));
+  if (targetH2) {
+    expandCard(targetH2.closest(".chapter-card"));
+    targetH2.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function attachCopilotMsgActions(bDiv, questionTxt, ansMd) {
+  const actBar = document.createElement("div");
+  actBar.className = "cp-msg-actions";
+
+  const insBtn = document.createElement("button");
+  insBtn.type = "button";
+  insBtn.className = "cp-act-btn";
+  insBtn.textContent = "➕ 插入报告末尾";
+  insBtn.title = "将该回答作为「伴读追问与延伸分析」章节插入正文（支持一键撤回）";
+  insBtn.onclick = () => appendCopilotAnswerToReport(questionTxt, ansMd, insBtn);
+
+  const cpBtn = document.createElement("button");
+  cpBtn.type = "button";
+  cpBtn.className = "cp-act-btn";
+  cpBtn.textContent = "⎘ 复制回答";
+  cpBtn.onclick = async () => {
+    await navigator.clipboard.writeText(ansMd);
+    cpBtn.textContent = "✓ 已复制";
+    setTimeout(() => { cpBtn.textContent = "⎘ 复制回答"; }, 1400);
+  };
+
+  actBar.append(insBtn, cpBtn);
+  bDiv.appendChild(actBar);
+}
+
+async function sendCopilotQuestion(qText) {
+  const rawInput = (qText || $("cp-input").value || "").trim();
+  if (!rawInput) return;
+  if (!currentMd) return alert("请先打开或生成一份调研报告");
+  $("cp-input").value = "";
+
+  const q = (!qText && copilotQuotedSnippet)
+    ? `针对报告中「${copilotQuotedSnippet.slice(0, 360)}」这一段：\n${rawInput}`
+    : rawInput;
+  if (!qText && copilotQuotedSnippet) setCopilotQuote("");
+
+  const msgs = $("cp-msgs");
+  const uDiv = document.createElement("div");
+  uDiv.className = "cp-msg user";
+  uDiv.textContent = q;
+  msgs.appendChild(uDiv);
+
+  const bDiv = document.createElement("div");
+  bDiv.className = "cp-msg bot";
+  const contentDiv = document.createElement("div");
+  contentDiv.innerHTML = `<span class="spin"></span>正在检索报告上下文与引文（SSE 流式生成中）…`;
+  bDiv.appendChild(contentDiv);
+  msgs.appendChild(bDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const payload = {
+    question: q,
+    report: currentMd,
+    references: stateData.references || [],
+    history: copilotHistory,
+  };
+
+  try {
+    const r = await fetch("/api/copilot/ask-stream", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!r.ok) throw new Error(await r.text());
+
+    const ctype = r.headers.get("content-type") || "";
+    let fullAns = "";
+
+    if (ctype.includes("text/event-stream") && r.body) {
+      const reader = r.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let buf = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const parts = buf.split("\n\n");
+        buf = parts.pop() || "";
+        for (const block of parts) {
+          const line = block.split("\n").find(l => l.startsWith("data:"));
+          if (!line) continue;
+          let evt = null;
+          try { evt = JSON.parse(line.slice(5).trim()); } catch { continue; }
+          if (!evt) continue;
+          if (evt.error) throw new Error(evt.error);
+          if (evt.chunk) {
+            fullAns += evt.chunk;
+            contentDiv.innerHTML = decorateCopilotMsg(DOMPurify.sanitize(marked.parse(fullAns)));
+            msgs.scrollTop = msgs.scrollHeight;
+          }
+          if (evt.done && evt.answer) {
+            fullAns = evt.answer;
+          }
+        }
+      }
+    } else {
+      const d = await r.json();
+      fullAns = d.answer || "";
+    }
+
+    const ans = fullAns.trim() || "（无回答）";
+    copilotHistory.push({ role: "user", content: q }, { role: "assistant", content: ans });
+    contentDiv.innerHTML = decorateCopilotMsg(DOMPurify.sanitize(marked.parse(ans)));
+    attachCopilotMsgActions(bDiv, rawInput, ans);
+  } catch (err) {
+    contentDiv.innerHTML = `<span style="color:var(--err)">❌ 提问失败：${esc(err.message)}</span>`;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+$("copilot-btn").onclick = () => {
+  $("copilot-panel").classList.toggle("hidden");
+  if (!$("copilot-panel").classList.contains("hidden")) $("cp-input").focus();
+};
+$("cp-close").onclick = () => $("copilot-panel").classList.add("hidden");
+$("cp-max").onclick = e => {
+  e.stopPropagation();
+  const max = $("copilot-panel").classList.toggle("maximized");
+  $("cp-max").textContent = max ? "❐ 还原" : "⛶ 放大";
+};
+$("cp-drag-head")?.addEventListener("dblclick", () => $("cp-max").click());
+$("cp-clear").onclick = () => {
+  copilotHistory = [];
+  setCopilotQuote("");
+  $("cp-msgs").innerHTML = `<div class="cp-msg bot">👋 对话已清空。请继续针对当前报告提问！</div>`;
+};
+$("cp-send").onclick = () => sendCopilotQuestion();
+$("cp-input").addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendCopilotQuestion(); }
+});
+document.querySelectorAll(".cp-preset").forEach(btn => {
+  btn.onclick = () => sendCopilotQuestion(btn.dataset.q);
+});
+
+// Phase 3 Item 4: Text Selection Floating AI Toolbar (#sel-toolbar)
+(function initSelectionToolbar() {
+  const bar = $("sel-toolbar");
+
+  function updateToolbarFromSelection() {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.rangeCount) {
+      bar.classList.add("hidden");
+      return;
+    }
+    const txt = sel.toString().trim();
+    if (txt.length < 2 || txt.length > 2400) {
+      bar.classList.add("hidden");
+      return;
+    }
+    const range = sel.getRangeAt(0);
+    const container = range.commonAncestorContainer.nodeType === 1
+      ? range.commonAncestorContainer
+      : range.commonAncestorContainer.parentElement;
+    if (!container || !container.closest("#report")) {
+      bar.classList.add("hidden");
+      return;
+    }
+
+    currentSelectionText = txt;
+    const chCard = container.closest(".chapter-card");
+    const chH2 = chCard ? chCard.querySelector(".chapter-head h2") : null;
+    currentSelectionChapter = chH2 ? chH2.textContent.replace(/^\d+\s*/, "").trim() : "";
+
+    const rect = range.getBoundingClientRect();
+    if (!rect.width && !rect.height) {
+      bar.classList.add("hidden");
+      return;
+    }
+    bar.classList.remove("hidden");
+    const barW = bar.offsetWidth || 340;
+    const barH = bar.offsetHeight || 38;
+    const left = Math.max(12, Math.min(innerWidth - barW - 12, rect.left + rect.width / 2 - barW / 2));
+    const top = rect.top > barH + 16 ? rect.top - barH - 10 : rect.bottom + 10;
+    bar.style.left = Math.round(left) + "px";
+    bar.style.top = Math.round(top) + "px";
+  }
+
+  document.addEventListener("mouseup", e => {
+    if (e.target.closest("#sel-toolbar")) return;
+    setTimeout(updateToolbarFromSelection, 15);
+  });
+  document.addEventListener("keyup", e => {
+    if (e.key === "Escape") {
+      bar.classList.add("hidden");
+      return;
+    }
+    setTimeout(updateToolbarFromSelection, 15);
+  });
+  window.addEventListener("scroll", () => {
+    if (!bar.classList.contains("hidden")) bar.classList.add("hidden");
+  }, { passive: true });
+
+  $("sel-explain").onclick = e => {
+    e.stopPropagation();
+    const snippet = currentSelectionText;
+    bar.classList.add("hidden");
+    window.getSelection()?.removeAllRanges();
+    if (!snippet) return;
+    $("copilot-panel").classList.remove("hidden");
+    sendCopilotQuestion(`请结合本报告上下文与引文，深入解释以下选中内容的核心概念、技术原理与关键论据：\n> 「${snippet.slice(0, 420)}」`);
+  };
+
+  $("sel-ask").onclick = e => {
+    e.stopPropagation();
+    const snippet = currentSelectionText;
+    bar.classList.add("hidden");
+    if (!snippet) return;
+    $("copilot-panel").classList.remove("hidden");
+    setCopilotQuote(snippet);
+    $("cp-input").focus();
+  };
+
+  $("sel-rewrite").onclick = async e => {
+    e.stopPropagation();
+    const snippet = currentSelectionText;
+    const chTitle = currentSelectionChapter;
+    bar.classList.add("hidden");
+    window.getSelection()?.removeAllRanges();
+    if (!snippet) return;
+
+    if (chTitle) {
+      // Find the chapter's AI button so the user sees live spinner feedback on that chapter
+      const card = [...document.querySelectorAll("#report .chapter-card")].find(c =>
+        (c.querySelector(".chapter-head h2")?.textContent || "").includes(normChapterKey(chTitle))
+      );
+      const aiBtn = card?.querySelector(".ch-ai-wrap .ch-src-pill") || $("sel-rewrite");
+      const inst = `请重点针对本章节中「${snippet.slice(0, 260)}」这一段进行深入扩写、补充技术细节与量化对比，保持本章节其余内容结构与所有 [n] 引用编号不变。`;
+      await rewriteChapterWithAi(chTitle, inst, aiBtn);
+    } else {
+      // Selection is in Hero / Executive summary outside a ## chapter
+      const firstH2 = [...document.querySelectorAll("#report .chapter-card h2")][0];
+      const fallbackTitle = firstH2 ? firstH2.textContent.replace(/^\d+\s*/, "").trim() : "";
+      if (fallbackTitle) {
+        const aiBtn = document.querySelector("#report .ch-ai-wrap .ch-src-pill") || $("sel-rewrite");
+        await rewriteChapterWithAi(fallbackTitle, `请围绕「${snippet.slice(0, 220)}」补充更详实的技术原理与量化对比，保持 [n] 引用编号不变。`, aiBtn);
+      }
+    }
+  };
+
+  $("sel-copy").onclick = async e => {
+    e.stopPropagation();
+    const snippet = currentSelectionText;
+    if (!snippet) return;
+    await navigator.clipboard.writeText(snippet);
+    const btn = $("sel-copy");
+    btn.textContent = "✓ 已复制";
+    setTimeout(() => {
+      btn.textContent = "⎘ 复制";
+      bar.classList.add("hidden");
+    }, 900);
+  };
+})();
+
+// Copilot Window Multi-Edge Drag-to-Resize & Header Drag-to-Move
+(function initCopilotResizeAndDrag() {
+  const panel = $("copilot-panel");
+  const head = $("cp-drag-head");
+  // Restore saved dimensions if present
+  try {
+    const saved = JSON.parse(localStorage.getItem("dr_copilot_rect") || "null");
+    if (saved && saved.w && saved.h) {
+      panel.style.width = Math.min(Math.max(340, saved.w), innerWidth - 24) + "px";
+      panel.style.height = Math.min(Math.max(320, saved.h), innerHeight - 24) + "px";
+    }
+  } catch {}
+
+  let mode = null, dir = "", startX = 0, startY = 0, startRect = null;
+
+  panel.querySelectorAll(".cp-rz").forEach(handle => {
+    handle.addEventListener("mousedown", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      panel.classList.remove("maximized");
+      $("cp-max").textContent = "⛶ 放大";
+      mode = "resize";
+      dir = handle.dataset.dir || "nw";
+      startX = e.clientX;
+      startY = e.clientY;
+      startRect = panel.getBoundingClientRect();
+      // Convert to explicit left/top positioning so resizing any edge anchors the opposite edge cleanly
+      panel.style.left = startRect.left + "px";
+      panel.style.top = startRect.top + "px";
+      panel.style.right = "auto";
+      panel.style.bottom = "auto";
+      panel.style.width = startRect.width + "px";
+      panel.style.height = startRect.height + "px";
+    });
+  });
+
+  head.addEventListener("mousedown", e => {
+    if (e.target.closest("button")) return;
+    if (panel.classList.contains("maximized")) return;
+    e.preventDefault();
+    mode = "move";
+    startX = e.clientX;
+    startY = e.clientY;
+    startRect = panel.getBoundingClientRect();
+    panel.style.left = startRect.left + "px";
+    panel.style.top = startRect.top + "px";
+    panel.style.right = "auto";
+    panel.style.bottom = "auto";
+  });
+
+  window.addEventListener("mousemove", e => {
+    if (!mode || !startRect) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (mode === "move") {
+      const nextL = Math.max(8, Math.min(innerWidth - startRect.width - 8, startRect.left + dx));
+      const nextT = Math.max(8, Math.min(innerHeight - startRect.height - 8, startRect.top + dy));
+      panel.style.left = nextL + "px";
+      panel.style.top = nextT + "px";
+    } else if (mode === "resize") {
+      let { left, top, width, height } = startRect;
+      const minW = 340, minH = 320;
+      if (dir.includes("w")) {
+        const newW = Math.max(minW, Math.min(startRect.right - 12, width - dx));
+        left = startRect.right - newW;
+        width = newW;
+      }
+      if (dir.includes("e")) {
+        width = Math.max(minW, Math.min(innerWidth - left - 12, width + dx));
+      }
+      if (dir.includes("n")) {
+        const newH = Math.max(minH, Math.min(startRect.bottom - 12, height - dy));
+        top = startRect.bottom - newH;
+        height = newH;
+      }
+      if (dir.includes("s")) {
+        height = Math.max(minH, Math.min(innerHeight - top - 12, height + dy));
+      }
+      panel.style.left = left + "px";
+      panel.style.top = top + "px";
+      panel.style.width = width + "px";
+      panel.style.height = height + "px";
+    }
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (mode === "resize") {
+      const r = panel.getBoundingClientRect();
+      try { localStorage.setItem("dr_copilot_rect", JSON.stringify({ w: Math.round(r.width), h: Math.round(r.height) })); } catch {}
+    }
+    mode = null;
+    startRect = null;
+  });
+})();
+
+// Item 8: Dual-Report Side-by-Side Comparison Modal
+function extractSummaryBullets(md) {
+  const lines = (md || "").split("\n");
+  const out = [];
+  let inSum = false;
+  for (const ln of lines) {
+    if (/^##\s*(1\.?\s*)?(摘要|核心结论|Executive Summary)/i.test(ln)) { inSum = true; continue; }
+    if (inSum && /^##\s+/.test(ln)) break;
+    if (inSum && /^\s*[-*0-9.]+\s+/.test(ln)) out.push(ln.replace(/^\s*[-*0-9.]+\s+/, "").trim());
+  }
+  return out.slice(0, 5);
+}
+function extractHeadingsList(md) {
+  return [...(md || "").matchAll(/^##\s+(.+)$/gm)].map(m => m[1].trim());
+}
+async function renderReportDiff(otherName) {
+  const box = $("diff-body");
+  if (!otherName) return;
+  box.innerHTML = `<div style="padding:24px;text-align:center;color:var(--muted)"><span class="spin"></span>正在加载对比报告数据…</div>`;
+  const b = await (await fetch("/api/reports/" + encodeURIComponent(otherName))).json();
+
+  const aRefs = stateData.references || [];
+  const bRefs = b.references || [];
+  const aUrls = new Set(aRefs.map(x => x.url).filter(Boolean));
+  const sharedRefs = bRefs.filter(x => x.url && aUrls.has(x.url));
+
+  const aVer = stateData.verification || {};
+  const bVer = b.verification || {};
+  const aRate = aVer.checked ? Math.round(((aVer.supported + 0.5 * (aVer.partial || 0)) / aVer.checked) * 100) + "%" : "—";
+  const bRate = bVer.checked ? Math.round(((bVer.supported + 0.5 * (bVer.partial || 0)) / bVer.checked) * 100) + "%" : "—";
+
+  const aTitle = currentMd.split("\n", 1)[0].replace(/^#\s*/, "").trim() || currentName;
+  const bTitle = (b.report || "").split("\n", 1)[0].replace(/^#\s*/, "").trim() || b.name;
+
+  const aBullets = extractSummaryBullets(currentMd);
+  const bBullets = extractSummaryBullets(b.report || "");
+  const aH2s = extractHeadingsList(currentMd);
+  const bH2s = extractHeadingsList(b.report || "");
+
+  box.innerHTML = `
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:10px 14px;background:var(--pri-soft);border:1px solid var(--pri-border);border-radius:12px">
+      <span class="pill ok">🔗 文献交叉重合度</span>
+      <span style="font-size:13px">两份报告共重合引用 <b>${sharedRefs.length}</b> 篇相同文献（左侧独有 <b>${Math.max(0, aRefs.length - sharedRefs.length)}</b> 篇 · 右侧独有 <b>${Math.max(0, bRefs.length - sharedRefs.length)}</b> 篇）</span>
+    </div>
+    <div class="diff-cols">
+      <div class="diff-col">
+        <div class="pill ok" style="margin-bottom:6px">📍 当前报告</div>
+        <div style="font-weight:800;font-size:16px;margin-bottom:10px">${esc(aTitle)}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+          <span class="pill">📚 来源 ${aRefs.length || Object.keys(refs).length} 篇</span>
+          <span class="pill">🧭 子问题 ${(stateData.plan || []).length} 个</span>
+          <span class="pill ok">🛡️ 核验可信度 ${aRate}</span>
+          <span class="pill">📝 ${currentMd.length.toLocaleString()} 字</span>
+        </div>
+        <b style="font-size:12.5px;color:var(--muted)">✨ 核心结论对比：</b>
+        <ul style="padding-left:18px;font-size:13px;line-height:1.65;margin:6px 0 12px">
+          ${aBullets.length ? aBullets.map(x => `<li>${esc(x.slice(0, 140))}</li>`).join("") : "<li>（未提取到摘要列表）</li>"}
+        </ul>
+        <b style="font-size:12.5px;color:var(--muted)">📑 章节结构 (${aH2s.length} 节)：</b>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
+          ${aH2s.map(h => `<span class="src-chip">${esc(h)}</span>`).join("")}
+        </div>
+      </div>
+
+      <div class="diff-col">
+        <div class="pill warn" style="margin-bottom:6px">⚖️ 对比报告 (${esc(b.name.slice(0, 15))})</div>
+        <div style="font-weight:800;font-size:16px;margin-bottom:10px">${esc(bTitle)}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+          <span class="pill">📚 来源 ${bRefs.length} 篇</span>
+          <span class="pill">🧭 子问题 ${(b.plan || []).length} 个</span>
+          <span class="pill ok">🛡️ 核验可信度 ${bRate}</span>
+          <span class="pill">📝 ${(b.report || "").length.toLocaleString()} 字</span>
+        </div>
+        <b style="font-size:12.5px;color:var(--muted)">✨ 核心结论对比：</b>
+        <ul style="padding-left:18px;font-size:13px;line-height:1.65;margin:6px 0 12px">
+          ${bBullets.length ? bBullets.map(x => `<li>${esc(x.slice(0, 140))}</li>`).join("") : "<li>（未提取到摘要列表）</li>"}
+        </ul>
+        <b style="font-size:12.5px;color:var(--muted)">📑 章节结构 (${bH2s.length} 节)：</b>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
+          ${bH2s.map(h => `<span class="src-chip">${esc(h)}</span>`).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+$("open-diff").onclick = async () => {
+  const reports = await (await fetch("/api/reports")).json();
+  if (!reports.length) return alert("归档库中暂无可对比的历史报告");
+  const sel = $("diff-select");
+  sel.innerHTML = reports.map(r => `<option value="${esc(r.name)}">${esc(r.title)} (${esc(r.name.slice(0, 13))})</option>`).join("");
+  const other = reports.find(r => r.name !== savedName) || reports[0];
+  sel.value = other.name;
+  $("diff-modal-backdrop").classList.remove("hidden");
+  renderReportDiff(sel.value);
+};
+$("diff-select").onchange = e => renderReportDiff(e.target.value);
+$("diff-close").onclick = () => $("diff-modal-backdrop").classList.add("hidden");
+$("diff-modal-backdrop").onclick = e => { if (e.target === $("diff-modal-backdrop")) $("diff-modal-backdrop").classList.add("hidden"); };
+$("edit").onclick = () => { switchPane("pane-report"); $("editor").value = currentMd; $("report").classList.add("hidden"); $("edit-box").classList.remove("hidden"); $("edit-msg").textContent = savedName ? "" : "该报告尚未落盘，保存仅更新当前页面"; };
+$("edit-cancel").onclick = () => { $("edit-box").classList.add("hidden"); $("report").classList.remove("hidden"); };
+$("edit-save").onclick = async () => {
+  const md = $("editor").value;
+  if (savedName) {
+    const r = await fetch("/api/reports/" + encodeURIComponent(savedName), { method: "PUT", headers: {"Content-Type":"application/json"}, body: JSON.stringify({report: md}) });
+    if (!r.ok) { $("edit-msg").textContent = "保存失败：" + await r.text(); return; }
+  }
+  render(md); loadLists();
+};
+
+// ---------------- Sidebar Lists ----------------
+function showTab(name) {
+  $("tab-runs").classList.toggle("active", name === "runs"); $("tab-reports").classList.toggle("active", name === "reports");
+  $("list-runs").classList.toggle("hidden", name !== "runs"); $("list-reports").classList.toggle("hidden", name !== "reports");
+}
+$("tab-runs").onclick = () => showTab("runs"); $("tab-reports").onclick = () => showTab("reports");
+
+async function loadLists() {
+  const [runs, reports] = await Promise.all([fetch("/api/runs").then(r => r.json()), fetch("/api/reports").then(r => r.json())]);
+  const lr = $("list-runs"); lr.innerHTML = runs.length ? "" : '<div style="padding:12px;color:var(--muted);font-size:12.5px">暂无调研任务</div>';
+  for (const r of runs) {
+    const div = document.createElement("div"); div.className = "item" + (r.id === runId ? " active" : ""); div.title = r.topic;
+    div.innerHTML = `<span class="status-dot ${esc(r.status)}"></span><span class="t"></span><span class="d">${fmtTime(r.created)}</span>`;
+    div.querySelector(".t").textContent = r.topic; div.onclick = () => openRun(r.id); lr.appendChild(div);
+  }
+  const lp = $("list-reports"); lp.innerHTML = reports.length ? "" : '<div style="padding:12px;color:var(--muted);font-size:12.5px">暂无归档报告</div>';
+  for (const it of reports) {
+    const div = document.createElement("div"); div.className = "item" + (it.name === savedName && !runId ? " active" : ""); div.title = it.title;
+    div.innerHTML = '<span>📄</span><span class="t"></span>'; div.querySelector(".t").textContent = it.title;
+    div.onclick = async () => {
+      const d = await (await fetch("/api/reports/" + encodeURIComponent(it.name))).json();
+      resetView(); runId = null; $("progress").classList.add("hidden");
+      savedName = currentName = d.name;
+      render(d.report, d.verification, {
+        research_type: d.research_type,
+        plan: d.plan,
+        findings: d.findings,
+        references: d.references,
+      });
+      loadLists();
+      window.scrollTo({top: 0, behavior: "smooth"});
+    };
+    lp.appendChild(div);
+  }
+  return runs;
+}
+setInterval(async () => { if (ACTIVE.includes(runStatus) || document.querySelector("#list-runs .item")) { try { await loadLists(); } catch {} } }, 8000);
+
+// ---------------- Settings Modal ----------------
+const TEXT_FIELDS = ["openai_base_url", "llm_model", "writer_model"];
+const SECRET_FIELDS = ["openai_api_key", "tavily_api_key", "s2_api_key", "github_token"];
+const SRC = { ui: "（来自设置）", env: "（来自 .env）", unset: "" };
+function setMsg(text, cls) { const m = $("settings-msg"); m.textContent = text; m.style.color = cls === "err" ? "var(--err)" : cls === "ok" ? "var(--ok)" : "var(--muted)"; }
+async function loadSettings() {
+  const s = await (await fetch("/api/settings")).json();
+  for (const k of TEXT_FIELDS) $("s_" + k).value = s[k].value || "";
+  for (const k of SECRET_FIELDS) {
+    const el = $("s_" + k), original = el.dataset.ph ??= el.placeholder;
+    el.value = ""; el.placeholder = s[k].set ? s[k].preview + "（已配置，留空保持不变）" : original;
+    $("h_" + k).textContent = s[k].set ? "✓ " + SRC[s[k].source] : "";
+  }
+  const ok = s.openai_api_key.set;
+  $("cfg-badge").textContent = ok ? "" : "●"; $("cfg-badge").style.color = "var(--err)"; $("cfg-badge").title = ok ? "" : "尚未配置 API Key";
+  const modelName = s.llm_model.value || "gpt-4o-mini";
+  $("active-model-pill").textContent = ok ? `🧠 ${modelName}` : "⚠️ 未配置 API Key";
+  $("admin-token-row")?.classList.toggle("hidden", !s.admin_locked);
+  return s;
+}
+async function saveSettings() {
+  const values = {};
+  for (const k of [...TEXT_FIELDS, ...SECRET_FIELDS]) values[k] = $("s_" + k).value;
+  const admin_token = $("s_admin_token")?.value || null;
+  const r = await fetch("/api/settings", { method: "PUT", headers: {"Content-Type":"application/json"}, body: JSON.stringify({values, admin_token}) });
+  if (!r.ok) throw new Error(await r.text());
+  await loadSettings();
+}
+$("open-settings").onclick = async () => { await loadSettings(); setMsg(""); $("settings").classList.remove("hidden"); };
+$("close-settings").onclick = () => $("settings").classList.add("hidden");
+$("settings").onclick = e => { if (e.target === $("settings")) $("settings").classList.add("hidden"); };
+document.querySelectorAll(".preset-url").forEach(a => {
+  a.onclick = e => { e.preventDefault(); $("s_openai_base_url").value = a.dataset.url; };
+});
+$("save-settings").onclick = async () => { try { await saveSettings(); setMsg("已保存 ✓", "ok"); } catch (e) { setMsg("保存失败：" + e.message, "err"); } };
+$("test-settings").onclick = async () => {
+  const btn = $("test-settings"); btn.disabled = true;
+  try {
+    await saveSettings(); setMsg("测试连接中…");
+    const r = await (await fetch("/api/settings/test", { method: "POST" })).json();
+    r.ok ? setMsg(`连接成功 ✓ 模型 ${r.model} 回复：${r.reply}`, "ok") : setMsg(`连接失败（${r.model}）：${r.error}`, "err");
+  } catch (e) { setMsg("失败：" + e.message, "err"); }
+  btn.disabled = false;
+};
+
+// ---------------- Init ----------------
+loadSettings().then(s => { if (!s.openai_api_key.set) { $("settings").classList.remove("hidden"); setMsg("请先配置 API Key 再开始调研", "err"); } });
+loadLists().then(async runs => {
+  const active = runs.find(r => ACTIVE.includes(r.status));
+  if (active) openRun(active.id);
+  else {
+    const reports = await (await fetch("/api/reports")).json();
+    if (reports.length) {
+      const d = await (await fetch("/api/reports/" + encodeURIComponent(reports[0].name))).json();
+      savedName = currentName = d.name;
+      render(d.report, d.verification, {
+        research_type: d.research_type,
+        plan: d.plan,
+        findings: d.findings,
+        references: d.references,
+      });
+    }
+  }
+});
+</script>
+</body>
+</html>

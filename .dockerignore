@@ -1,0 +1,11 @@
+.git
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.env
+.deep_research_settings.json
+.deep_research
+reports
+tests

@@ -1,0 +1,16 @@
+langgraph>=0.6
+langgraph-checkpoint-sqlite>=2.0
+aiosqlite>=0.20
+langchain-core>=0.3
+langchain-openai>=0.3
+httpx>=0.27
+pydantic>=2.0
+python-dotenv>=1.0
+pypdf>=4.0
+# 可选：没有 Tavily Key 时用 DuckDuckGo 做网页搜索
+ddgs
+# Web 界面
+fastapi>=0.110
+uvicorn>=0.29
+# 测试
+pytest>=8

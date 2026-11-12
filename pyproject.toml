@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deep-research-agent"
+version = "0.2.0"
+description = "An intelligent LangGraph-based Deep Research Agent & Interactive Research Studio for academic papers and industry intelligence."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+keywords = ["deep-research", "langgraph", "llm", "agent", "academic-search", "rag", "fact-checking", "fastapi"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "langgraph>=0.6",
+    "langgraph-checkpoint-sqlite>=2.0",
+    "aiosqlite>=0.20",
+    "langchain-core>=0.3",
+    "langchain-openai>=0.3",
+    "httpx>=0.27",
+    "pydantic>=2.0",
+    "python-dotenv>=1.0",
+    "pypdf>=4.0",
+]
+
+[project.optional-dependencies]
+ddg = ["ddgs"]
+web = ["fastapi>=0.110", "uvicorn>=0.29"]
+dev = ["pytest>=8", "fastapi>=0.110", "uvicorn>=0.29", "httpx>=0.27"]
+
+[project.scripts]
+deep-research = "deep_research.cli:main"
+deep-research-web = "deep_research.web.server:main"
+
+[tool.setuptools.packages.find]
+include = ["deep_research*"]
+
+[tool.setuptools.package-data]
+"deep_research.web" = ["static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

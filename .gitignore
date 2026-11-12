@@ -1,0 +1,41 @@
+# Python bytecode & packaging
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Secrets & local runtime configuration (NEVER commit)
+.env
+.env.*
+!.env.example
+.deep_research_settings.json
+
+# Runtime databases, checkpoints & generated reports
+.deep_research/
+.checkpoints.sqlite*
+*.db
+*.db-shm
+*.db-wal
+reports/
+.langgraph_api/
+
+# Testing & linters
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
